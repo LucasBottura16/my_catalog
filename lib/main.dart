@@ -100,7 +100,7 @@ class _FirebaseTestScreenState extends State<FirebaseTestScreen> {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Verifique o console do Firebase (Firestore) para confirmar! teste',
+              'Verifique o console do Firebase (Firestore) para confirmar! teste aaa',
               textAlign: TextAlign.center,
               style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
             ),
