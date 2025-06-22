@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:my_catalog/home_screen/home_view.dart';
-import 'package:my_catalog/login_screens/login_view.dart';
+import 'package:my_catalog/login_screen/login_view.dart';
 import 'package:my_catalog/route_generator.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
