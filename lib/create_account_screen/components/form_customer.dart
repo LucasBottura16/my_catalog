@@ -11,14 +11,14 @@ class FormCustomer extends StatefulWidget {
 }
 
 class _FormCustomerState extends State<FormCustomer> {
-  String? _selectedState;
-
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerCPF = TextEditingController();
   final TextEditingController _controllerAddress = TextEditingController();
   final TextEditingController _controllerPhone = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+
+  String? _selectedState;
 
   @override
   void dispose() {
@@ -131,15 +131,21 @@ class _FormCustomerState extends State<FormCustomer> {
         const SizedBox(height: 20),
         ElevatedButton(
             onPressed: () {
-              debugPrint({
-                "Nome": _controllerName.text,
-                "CPF": _controllerCPF.text,
-                "Estado": _selectedState,
-                "Endereço": _controllerAddress.text,
-                "Telefone": _controllerPhone.text,
-                "Email": _controllerEmail.text,
-                "Senha": _controllerPassword.text,
-              }.toString());
+
+              CreateAccountService.createAccount(
+                  context,
+                  "Cliente",
+                  _controllerName.text,
+                  _controllerCPF.text,
+                  _selectedState.toString(),
+                  _controllerAddress.text,
+                  _controllerPhone.text,
+                  "null",
+                  "null",
+                  "null",
+                  "null",
+                  _controllerEmail.text,
+                  _controllerPassword.text);
             },
             style: ButtonStyle(
               shape: WidgetStateProperty.resolveWith<OutlinedBorder>(

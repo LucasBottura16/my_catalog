@@ -258,17 +258,21 @@ class _FormCompanyState extends State<FormCompany> {
         const SizedBox(height: 20),
         ElevatedButton(
             onPressed: () {
-              debugPrint({
-                "Empresa": _controllerCompany.text,
-                "CNPJ": _controllerCNPJ.text,
-                "Representante": _controllerRepresentative.text,
-                "Categoria": _selectedCategory,
-                "Estado": _selectedState,
-                "Endereço": _controllerAddress.text,
-                "Telefone": _controllerPhone.text,
-                "Email": _controllerEmail.text,
-                "Senha": _controllerPassword.text,
-              }.toString());
+
+              CreateAccountService.createAccount(
+                  context,
+                  "Empresa",
+                  "null",
+                  "null",
+                  _selectedState.toString(),
+                  _controllerAddress.text,
+                  _controllerPhone.text,
+                  _controllerCompany.text,
+                  _controllerCNPJ.text,
+                  _controllerRepresentative.text,
+                  _selectedCategory.toString(),
+                  _controllerEmail.text,
+                  _controllerPassword.text);
             },
             style: ButtonStyle(
               shape: WidgetStateProperty.resolveWith<OutlinedBorder>(
