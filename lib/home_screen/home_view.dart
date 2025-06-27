@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:my_catalog/route_generator.dart';
+import 'package:my_catalog/catalog_screen/catalog_view.dart';
+import 'package:my_catalog/home_screen/home_service.dart';
+import 'package:my_catalog/profile_screen/profile_view.dart';
 import 'package:my_catalog/utils/colors.dart';
 
 class HomeView extends StatefulWidget {
@@ -11,8 +12,19 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  int _indexCurrent = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    HomeService.findCollectionByUid();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Widget> screens = [const CatalogView(), const ProfileView()];
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
@@ -22,35 +34,36 @@ class _HomeViewState extends State<HomeView> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Catalogos", style: const TextStyle(color: Colors.white, fontSize: 25)),
+            Text("Catalogos",
+                style: const TextStyle(color: Colors.white, fontSize: 25)),
             const SizedBox(width: 10),
-             Image.asset('images/Logo.png', width: 100, height: 100)
+            Image.asset('images/Logo.png', width: 100, height: 100)
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Text("TEla de home"),
-            TextButton(onPressed: (){
-              FirebaseAuth auth = FirebaseAuth.instance;
-              auth.signOut().then((value) =>
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, RouteGenerator.routeLogin, (_) => false));
-            }, child: Text("Sair"))
-          ],
-        ),
-      ),
+      body: screens[_indexCurrent],
       bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          type: BottomNavigationBarType.fixed,
-          fixedColor: MyColors.myPrimary,
-          items: const [
-            BottomNavigationBarItem(
-                label: "Home", icon: Icon(Icons.home)),
-            BottomNavigationBarItem(
-                label: "Perfil", icon: Icon(Icons.person)),
-          ]),
+        backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        fixedColor: MyColors.myPrimary,
+        currentIndex: _indexCurrent,
+        onTap: (index) {
+          setState(() {
+            _indexCurrent = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            label: "Home",
+            icon: Icon(Icons.home),
+          ),
+          BottomNavigationBarItem(
+            label: "Perfil",
+            icon: Icon(Icons.person),
+          ),
+        ],
+        unselectedItemColor: Colors.grey, // Ou a cor que preferir para os itens inativos
+      ),
     );
   }
 }

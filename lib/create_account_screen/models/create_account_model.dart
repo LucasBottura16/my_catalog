@@ -27,6 +27,8 @@ class DBCreateCustomer {
       "estado": _state,
       "endereco": _address,
       "telefone": _phone,
+      "biografia": "Descreva sua biografia aqui!",
+      "imagem": ""
     };
 
     return map;
@@ -103,6 +105,8 @@ class DBCreateCompany {
       "estado": _state,
       "endereco": _address,
       "telefone": _phone,
+      "biografia": "Descreva sua biografia aqui!",
+      "imagem": ""
     };
     return map;
   }
