@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_catalog/create_account_screen/components/add_categories_modal.dart';
 import 'package:my_catalog/create_account_screen/create_account_service.dart';
 import 'package:my_catalog/utils/colors.dart';
+import 'package:my_catalog/utils/custom_input_field.dart';
 import 'package:my_catalog/utils/masks.dart';
 
 class FormCompany extends StatefulWidget {
@@ -15,7 +16,8 @@ class FormCompany extends StatefulWidget {
 class _FormCompanyState extends State<FormCompany> {
   final TextEditingController _controllerCompany = TextEditingController();
   final TextEditingController _controllerCNPJ = TextEditingController();
-  final TextEditingController _controllerRepresentative = TextEditingController();
+  final TextEditingController _controllerRepresentative =
+      TextEditingController();
   final TextEditingController _controllerAddress = TextEditingController();
   final TextEditingController _controllerPhone = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
@@ -101,36 +103,24 @@ class _FormCompanyState extends State<FormCompany> {
       children: [
         const Text("INFORMAÇÕES DA EMPRESA",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        const Text("EMPRESA",
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
-        TextFormField(
-          decoration: const InputDecoration(
-            hintText: "Digite o nome da empresa",
-          ),
+        CustomInputField(
           controller: _controllerCompany,
+          labelText: "EMPRESA",
+          hintText: "Digite o nome da empresa",
         ),
-        const SizedBox(height: 10),
-        const Text("CNPJ",
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
-        TextFormField(
+        CustomInputField(
+          controller: _controllerCNPJ,
+          labelText: "CNPJ",
+          hintText: "00.000.000/0000-00",
           keyboardType: TextInputType.number,
           inputFormatters: [
             MasksInput.cnpjFormatter,
           ],
-          decoration: const InputDecoration(
-            hintText: "00.000.000/0000-00",
-          ),
-          controller: _controllerCNPJ,
         ),
-        const SizedBox(height: 10),
-        const Text("REPRESENTANTE",
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
-        TextFormField(
-          decoration: const InputDecoration(
-            hintText: "nome do representante",
-          ),
+        CustomInputField(
           controller: _controllerRepresentative,
+          labelText: "REPRESENTANTE",
+          hintText: "Digite o nome do representante",
         ),
         const SizedBox(height: 10),
         Row(
@@ -216,49 +206,34 @@ class _FormCompanyState extends State<FormCompany> {
             ),
           ),
         ),
-        const SizedBox(height: 10),
-        const Text("ENDEREÇO",
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
-        TextFormField(
-          decoration: const InputDecoration(
-            hintText: "nome da rua",
-          ),
+        CustomInputField(
           controller: _controllerAddress,
+          labelText: "ENDEREÇO",
+          hintText: "nome da rua",
         ),
-        const SizedBox(height: 10),
-        const Text("Telefone", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
+        CustomInputField(
           controller: _controllerPhone,
+          labelText: "Telefone",
+          hintText: "(11) 9 9999-9999",
           keyboardType: TextInputType.number,
           inputFormatters: [MasksInput.phoneFormatter],
-          decoration: const InputDecoration(
-            hintText: "(11) 9 9999-9999",
-          ),
         ),
         const SizedBox(height: 20),
         const Text("INFORMAÇÕES DA CONTA",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        const Text("EMAIL", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
-          decoration: const InputDecoration(
-            hintText: "exemplo@email.com",
-          ),
+        CustomInputField(
           controller: _controllerEmail,
+          labelText: "EMAIL",
+          hintText: "exemplo@email.com",
         ),
-        const SizedBox(height: 10),
-        const Text("SENHA", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
-          obscureText: true,
-          decoration: const InputDecoration(
+        CustomInputField(
+            controller: _controllerPassword,
+            labelText: "SENHA",
             hintText: "******",
-          ),
-          controller: _controllerPassword,
-        ),
+            obscureText: true),
         const SizedBox(height: 20),
         ElevatedButton(
             onPressed: () {
-
               CreateAccountService.createAccount(
                   context,
                   "Empresa",

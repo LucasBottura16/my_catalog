@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_catalog/create_account_screen/create_account_service.dart';
 import 'package:my_catalog/utils/colors.dart';
+import 'package:my_catalog/utils/custom_input_field.dart';
 import 'package:my_catalog/utils/masks.dart';
 
 class FormCustomer extends StatefulWidget {
@@ -38,25 +39,16 @@ class _FormCustomerState extends State<FormCustomer> {
       children: [
         const Text("INFORMAÇÕES PESSOAIS",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        const Text("NOME", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
-          decoration: const InputDecoration(
-            hintText: "Digite seu nome",
-          ),
-          controller: _controllerName,
-        ),
-        const SizedBox(height: 10),
-        const Text("CPF", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
+        CustomInputField(
+            controller: _controllerName,
+            labelText: "NOME",
+            hintText: "Digite seu nome"),
+        CustomInputField(
           controller: _controllerCPF,
+          labelText: "CPF",
+          hintText: "000.000.000-00",
+          inputFormatters: [MasksInput.cpfFormatter],
           keyboardType: TextInputType.number,
-          inputFormatters: [
-            MasksInput.cpfFormatter,
-          ],
-          decoration: const InputDecoration(
-            hintText: "000.000.000-00",
-          ),
         ),
         const SizedBox(height: 10),
         const Text("ESTADO", style: TextStyle(fontWeight: FontWeight.w400)),
@@ -90,48 +82,35 @@ class _FormCustomerState extends State<FormCustomer> {
             ),
           ),
         ),
-        const SizedBox(height: 10),
-        const Text("ENDEREÇO", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
-          decoration: const InputDecoration(
-            hintText: "nome da rua",
-          ),
+        CustomInputField(
           controller: _controllerAddress,
+          labelText: "ENDEREÇO",
+          hintText: "nome da rua",
         ),
-        const SizedBox(height: 10),
-        const Text("Telefone", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
+        CustomInputField(
           controller: _controllerPhone,
+          labelText: "Telefone",
+          hintText: "(11) 9 9999-9999",
           keyboardType: TextInputType.number,
           inputFormatters: [MasksInput.phoneFormatter],
-          decoration: const InputDecoration(
-            hintText: "(11) 9 9999-9999",
-          ),
         ),
         const SizedBox(height: 20),
         const Text("INFORMAÇÕES DA CONTA",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        const Text("EMAIL", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
-          decoration: const InputDecoration(
-            hintText: "exemplo@email.com",
-          ),
+        CustomInputField(
           controller: _controllerEmail,
+          labelText: "EMAIL",
+          hintText: "exemplo@email.com",
         ),
-        const SizedBox(height: 10),
-        const Text("SENHA", style: TextStyle(fontWeight: FontWeight.w400)),
-        TextFormField(
-          obscureText: true,
-          decoration: const InputDecoration(
-            hintText: "******",
-          ),
+        CustomInputField(
           controller: _controllerPassword,
+          labelText: "SENHA",
+          hintText: "******",
+          obscureText: true,
         ),
         const SizedBox(height: 20),
         ElevatedButton(
             onPressed: () {
-
               CreateAccountService.createAccount(
                   context,
                   "Cliente",

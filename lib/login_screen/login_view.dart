@@ -3,6 +3,7 @@ import 'package:my_catalog/login_screen/login_service.dart';
 import 'package:my_catalog/login_screen/login_styles.dart';
 import 'package:my_catalog/route_generator.dart';
 import 'package:my_catalog/utils/colors.dart';
+import 'package:my_catalog/utils/custom_input_field.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -92,56 +93,43 @@ class _LoginViewState extends State<LoginView> {
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        autofocus: true,
-                        style:
-                            const TextStyle(fontSize: 20, color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: "Email",
-                          hintStyle: TextStyle(
-                              color: Colors.white), // Cor do placeholder
-                          enabledBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors
-                                    .white),
-                          ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white,
-                                width:
-                                    2.0),
-                          ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 10.0),
-                        ),
+                      CustomInputField(
                         controller: _usernameController,
+                        labelText: "Sem texto",
+                        hintText: "Email",
+                        spacingHeight: 0,
+                        hintStyle: TextStyle(color: Colors.white),
+                        autoFocus: true,
+                        keyboardType: TextInputType.emailAddress,
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.white, width: 2.0),
+                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 10.0),
                       ),
-                      TextField(
+                      CustomInputField(
+                        controller: _passwordController,
+                        labelText: "Sem texto",
+                        hintText: "Senha",
+                        spacingHeight: 0,
+                        hintStyle: TextStyle(color: Colors.white),
                         obscureText: true,
                         style:
                             const TextStyle(fontSize: 20, color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: "Senha",
-                          hintStyle: TextStyle(
-                              color: Colors.white),
-                          enabledBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors
-                                    .white),
-                          ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white,
-                                width:
-                                    2.0), // Cor e espessura da linha quando está em foco
-                          ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 10.0),
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
                         ),
-                        controller: _passwordController,
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.white, width: 2.0),
+                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 10.0),
                       ),
                       const SizedBox(height: 25),
                       _isLoading == true
@@ -217,9 +205,6 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ],
                   ),
-                )
-            )
-        )
-    );
+                ))));
   }
 }
