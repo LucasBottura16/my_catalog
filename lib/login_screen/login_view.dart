@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:my_catalog/login_screen/login_service.dart';
-import 'package:my_catalog/login_screen/login_styles.dart';
 import 'package:my_catalog/route_generator.dart';
 import 'package:my_catalog/utils/colors.dart';
-import 'package:my_catalog/utils/custom_input_field.dart';
+import 'package:my_catalog/utils/customs_components/custom_button.dart';
+import 'package:my_catalog/utils/customs_components/custom_input_field.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -132,74 +132,45 @@ class _LoginViewState extends State<LoginView> {
                             const EdgeInsets.symmetric(vertical: 10.0),
                       ),
                       const SizedBox(height: 25),
-                      _isLoading == true
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ))
-                          : ElevatedButton(
-                              style: loginButtonStyle,
-                              onPressed: () async {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                                await LoginService.login(
-                                  _usernameController.text,
-                                  _passwordController.text,
-                                  context,
-                                );
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                              },
-                              child: const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "ENTRAR NO APP",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w300,
-                                      color: MyColors.myPrimary,
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_right,
-                                    size: 30,
-                                    weight: 3.5,
-                                    color: MyColors.myPrimary,
-                                  )
-                                ],
-                              )),
+                      CustomButton(
+                        onPressed: () async {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          await LoginService.login(
+                            _usernameController.text,
+                            _passwordController.text,
+                            context,
+                          );
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        },
+                        title: "ENTRAR NO APP",
+                        titleColor: MyColors.myPrimary,
+                        titleSize: 18,
+                        titleFontWeight: FontWeight.w300,
+                        icon: Icons.keyboard_arrow_right,
+                        iconColor: MyColors.myPrimary,
+                        iconSize: 30,
+                        isLoading: _isLoading,
+                        loadingColor: Colors.white,
+                      ),
                       const SizedBox(
                         height: 15,
                       ),
-                      ElevatedButton(
-                          style: loginButtonStyle,
+                      CustomButton(
                           onPressed: () async {
                             Navigator.pushNamed(
                                 context, RouteGenerator.createAccount);
                           },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "CRIAR CONTA NO APP",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w300,
-                                  color: MyColors.myPrimary,
-                                ),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_right,
-                                size: 30,
-                                weight: 3.5,
-                                color: MyColors.myPrimary,
-                              )
-                            ],
-                          )),
+                          title: "CRIAR CONTA NO APP",
+                          titleColor: MyColors.myPrimary,
+                          titleSize: 18,
+                          titleFontWeight: FontWeight.w300,
+                          icon: Icons.keyboard_arrow_right,
+                          iconColor: MyColors.myPrimary,
+                          iconSize: 30),
                       const SizedBox(
                         height: 40,
                       ),

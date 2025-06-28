@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:my_catalog/create_account_screen/components/add_categories_modal.dart';
 import 'package:my_catalog/create_account_screen/create_account_service.dart';
 import 'package:my_catalog/utils/colors.dart';
-import 'package:my_catalog/utils/custom_input_field.dart';
+import 'package:my_catalog/utils/customs_components/custom_button.dart';
+import 'package:my_catalog/utils/customs_components/custom_input_field.dart';
 import 'package:my_catalog/utils/masks.dart';
 
 class FormCompany extends StatefulWidget {
@@ -28,6 +29,8 @@ class _FormCompanyState extends State<FormCompany> {
   List<String> _categories = [];
   String? _selectedCategory;
   bool _isLoadingCategories = true;
+
+  bool _isLoading = false;
 
   Future<void> _fetchCategories() async {
     final CollectionReference categoriesCollection =
@@ -232,9 +235,12 @@ class _FormCompanyState extends State<FormCompany> {
             hintText: "******",
             obscureText: true),
         const SizedBox(height: 20),
-        ElevatedButton(
-            onPressed: () {
-              CreateAccountService.createAccount(
+        CustomButton(
+            onPressed: () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await CreateAccountService.createAccount(
                   context,
                   "Empresa",
                   "null",
@@ -248,21 +254,18 @@ class _FormCompanyState extends State<FormCompany> {
                   _selectedCategory.toString(),
                   _controllerEmail.text,
                   _controllerPassword.text);
+              setState(() {
+                _isLoading = false;
+              });
             },
-            style: ButtonStyle(
-              shape: WidgetStateProperty.resolveWith<OutlinedBorder>(
-                (Set<WidgetState> states) {
-                  return RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  );
-                },
-              ),
-              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                  const EdgeInsets.fromLTRB(50, 15, 50, 15)),
-              backgroundColor:
-                  WidgetStateProperty.all<Color>(MyColors.myPrimary),
-            ),
-            child: Text("CRIAR CONTA", style: TextStyle(color: Colors.white))),
+            title: "CRIAR CONTA",
+            titleColor: Colors.white,
+          buttonColor: MyColors.myPrimary,
+          buttonBorderRadius: 10,
+          buttonEdgeInsets: const EdgeInsets.fromLTRB(50, 15, 50, 15),
+          isLoading: _isLoading,
+          loadingColor: MyColors.myPrimary,
+        ),
       ],
     );
   }

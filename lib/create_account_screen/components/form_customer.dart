@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_catalog/create_account_screen/create_account_service.dart';
 import 'package:my_catalog/utils/colors.dart';
-import 'package:my_catalog/utils/custom_input_field.dart';
+import 'package:my_catalog/utils/customs_components/custom_button.dart';
+import 'package:my_catalog/utils/customs_components/custom_input_field.dart';
 import 'package:my_catalog/utils/masks.dart';
 
 class FormCustomer extends StatefulWidget {
@@ -20,6 +21,8 @@ class _FormCustomerState extends State<FormCustomer> {
   final TextEditingController _controllerPassword = TextEditingController();
 
   String? _selectedState;
+
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -109,37 +112,37 @@ class _FormCustomerState extends State<FormCustomer> {
           obscureText: true,
         ),
         const SizedBox(height: 20),
-        ElevatedButton(
-            onPressed: () {
-              CreateAccountService.createAccount(
-                  context,
-                  "Cliente",
-                  _controllerName.text,
-                  _controllerCPF.text,
-                  _selectedState.toString(),
-                  _controllerAddress.text,
-                  _controllerPhone.text,
-                  "null",
-                  "null",
-                  "null",
-                  "null",
-                  _controllerEmail.text,
-                  _controllerPassword.text);
-            },
-            style: ButtonStyle(
-              shape: WidgetStateProperty.resolveWith<OutlinedBorder>(
-                (Set<WidgetState> states) {
-                  return RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  );
-                },
-              ),
-              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                  const EdgeInsets.fromLTRB(50, 15, 50, 15)),
-              backgroundColor:
-                  WidgetStateProperty.all<Color>(MyColors.myPrimary),
-            ),
-            child: Text("CRIAR CONTA", style: TextStyle(color: Colors.white))),
+        CustomButton(
+          onPressed: () async {
+            setState(() {
+              _isLoading = true;
+            });
+            await CreateAccountService.createAccount(
+                context,
+                "Cliente",
+                _controllerName.text,
+                _controllerCPF.text,
+                _selectedState.toString(),
+                _controllerAddress.text,
+                _controllerPhone.text,
+                "null",
+                "null",
+                "null",
+                "null",
+                _controllerEmail.text,
+                _controllerPassword.text);
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          title: "CRIAR CONTA",
+          titleColor: Colors.white,
+          buttonColor: MyColors.myPrimary,
+          buttonBorderRadius: 10,
+          buttonEdgeInsets: const EdgeInsets.fromLTRB(50, 15, 50, 15),
+          isLoading: _isLoading,
+          loadingColor: MyColors.myPrimary,
+        )
       ],
     );
   }

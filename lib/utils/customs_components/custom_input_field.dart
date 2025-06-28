@@ -13,6 +13,7 @@ class CustomInputField extends StatelessWidget {
   final bool obscureText;
   final int? maxLines;
   final int? minLines;
+  final int? maxLength;
   final bool enabled;
   final bool readOnly;
   final bool autoFocus;
@@ -38,13 +39,14 @@ class CustomInputField extends StatelessWidget {
     this.obscureText = false,
     this.maxLines = 1,
     this.minLines = 1,
+    this.maxLength,
     this.enabled = true,
     this.readOnly = false,
     this.autoFocus = false,
     this.textCapitalization = TextCapitalization.none,
     this.prefixIcon,
     this.suffixIcon,
-    this.spacingHeight,
+    this.spacingHeight = 10,
     this.labelTextStyle,
     this.contentPadding,
     this.enabledBorder,
@@ -56,7 +58,7 @@ class CustomInputField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: spacingHeight ?? 10),
+        SizedBox(height: spacingHeight),
         labelText == "Sem texto" ? const SizedBox() :
         Text(
           labelText,
@@ -74,6 +76,8 @@ class CustomInputField extends StatelessWidget {
           readOnly: readOnly,
           textCapitalization: textCapitalization,
           style: style,
+          maxLength: maxLength,
+          autofocus: autoFocus,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: hintStyle,
