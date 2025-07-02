@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_catalog/profile_screen/profile_service.dart';
 import 'package:my_catalog/profile_screen/profile_style.dart';
+import 'package:my_catalog/route_generator.dart';
 import 'package:my_catalog/utils/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -265,15 +266,18 @@ class _ProfileViewState extends State<ProfileView> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+      floatingActionButton:  _typeAccount == "company"? FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(
+              context, RouteGenerator.addCatalog);
+        },
         tooltip: 'Adicionar',
         backgroundColor: MyColors.myPrimary,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
-      ),
+      ) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation
-          .startFloat, // Move para o canto inferior esquerdo
+          .startFloat,
     );
   }
 }

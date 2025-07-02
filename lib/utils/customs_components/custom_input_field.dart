@@ -62,7 +62,7 @@ class CustomInputField extends StatelessWidget {
         labelText == "Sem texto" ? const SizedBox() :
         Text(
           labelText,
-          style: labelTextStyle ?? const TextStyle(fontWeight: FontWeight.w400),
+          style: labelTextStyle ?? const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         TextFormField(
           controller: controller,

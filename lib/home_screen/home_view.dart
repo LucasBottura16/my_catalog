@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_catalog/catalog_screen/catalog_view.dart';
+import 'package:my_catalog/catalog_screen/home_catalog_screen/home_catalog_view.dart';
 import 'package:my_catalog/home_screen/home_service.dart';
 import 'package:my_catalog/profile_screen/profile_view.dart';
 import 'package:my_catalog/utils/colors.dart';
