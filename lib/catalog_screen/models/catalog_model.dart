@@ -11,7 +11,7 @@ class DBAddCatalog {
 
   DBAddCatalog();
 
-  DBAddCatalog.fromDocumentSnapshotNews(DocumentSnapshot documentSnapshot) {
+  DBAddCatalog.fromDocumentSnapshotCatalog(DocumentSnapshot documentSnapshot) {
     uid = documentSnapshot["uid"];
     catalogName = documentSnapshot["nome do catalogo"];
     catalogCategory = documentSnapshot["categoria do catalogo"];
@@ -21,7 +21,7 @@ class DBAddCatalog {
     data = documentSnapshot["data"];
   }
 
-  Map<String, dynamic> toMapNew(uid, uidCompany) {
+  Map<String, dynamic> toMapCatalog(uid, uidCompany) {
     Map<String, dynamic> map = {
       'nome do catalogo': catalogName,
       'categoria do catalogo': catalogCategory,

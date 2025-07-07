@@ -21,6 +21,7 @@ class _AddCatalogViewState extends State<AddCatalogView> {
   List<String> _categories = [];
   String? _selectedCategory;
   bool _isLoadingCategories = true;
+  bool _isLoading = false;
 
   Future<void> _fetchCategories() async {
     final CollectionReference categoriesCollection =
@@ -192,22 +193,31 @@ class _AddCatalogViewState extends State<AddCatalogView> {
             child: SizedBox(
                 width: double.infinity,
                 child: CustomButton(
-                  onPressed: () {
-                    AddCatalogService.addCatalog(
+                  onPressed: () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                   await AddCatalogService.addCatalog(
                         context,
                         _controllerCatalog.text,
                         _controllerDescription.text,
                         _pickerValue,
-                        _selectedCategory!);
+                        _selectedCategory ?? "");
+                    setState(() {
+                      _isLoading = false;
+                    });
                   },
                   title: "CADASTRAR CATÁLOGO",
                   titleColor: Colors.white,
-                  titleSize: 18,
+                  titleSize: 16,
                   buttonEdgeInsets: const EdgeInsets.symmetric(vertical: 25),
                   buttonColor: MyColors.myPrimary,
                   buttonBorderRadius: 0,
+                  isLoading: _isLoading,
+                  loadingColor: MyColors.myPrimary,
                 )),
           ),
+          _isLoading ? const SizedBox(height: 20) : const SizedBox(),
         ],
       ),
     );

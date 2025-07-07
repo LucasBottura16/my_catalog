@@ -33,9 +33,9 @@ class AddCatalogService {
           });
     } else {
 
-      String? imageUrl = await uploadImages(catalogImage, catalogName);
-
       String uid = RandomKeys().generateRandomString();
+
+      String? imageUrl = await uploadImages(catalogImage, catalogName, uid);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -50,26 +50,22 @@ class AddCatalogService {
       await firestore
           .collection("Catalogos")
           .doc(uid)
-          .set(dbAddCatalog.toMapNew(uid, prefs.getString('uid') ?? ''))
+          .set(dbAddCatalog.toMapCatalog(uid, prefs.getString('uid') ?? ''))
           .then((value) => Navigator.pop(context));
     }
 
   }
 
   static Future<String?> uploadImages(
-      String picker, String title) async {
+      String picker, String title, String uid) async {
     if (picker == "Sem Imagem") {
       debugPrint("Sem Imagem");
       return null;
     } else {
-      debugPrint("tem imagem");
-      debugPrint("title: $title");
-      debugPrint("picker: $picker");
       FirebaseStorage storage = FirebaseStorage.instance;
       Reference raiz = storage.ref();
-      String uid = RandomKeys().generateRandomString();
       Reference file = raiz
-          .child("Catalogo")
+          .child("Catalogos")
           .child(uid)
           .child("$title.png");
 

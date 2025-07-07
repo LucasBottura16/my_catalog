@@ -5,6 +5,7 @@ class CustomInputField extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final String hintText;
+  final String? suffix;
   final TextStyle? hintStyle;
   final TextStyle? style;
   final TextInputType keyboardType;
@@ -32,6 +33,7 @@ class CustomInputField extends StatelessWidget {
     required this.labelText,
     this.hintText = '',
     this.hintStyle,
+    this.suffix,
     this.style,
     this.keyboardType = TextInputType.text,
     this.inputFormatters,
@@ -83,6 +85,7 @@ class CustomInputField extends StatelessWidget {
             hintStyle: hintStyle,
             prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
             suffixIcon: suffixIcon != null ? Icon(suffixIcon) : null,
+            suffix: suffix != null ? Text(suffix!) : null,
             contentPadding: contentPadding,
             enabledBorder: enabledBorder,
             focusedBorder: focusedBorder,

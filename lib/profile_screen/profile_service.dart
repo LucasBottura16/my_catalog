@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +12,23 @@ class ProfileService {
     auth.signOut().then((value) =>
         Navigator.pushNamedAndRemoveUntil(
             context, RouteGenerator.routeLogin, (_) => false));
+  }
+
+  static Future<Stream<QuerySnapshot>?>? addListenerCatalog(
+      StreamController<QuerySnapshot> controllerStream) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    Stream<QuerySnapshot> stream = firestore
+        .collection("Catalogos")
+    .where("uidEmpresa", isEqualTo: prefs.getString('uid'))
+        .snapshots();
+
+    stream.listen((event) {
+      controllerStream.add(event);
+    });
+
+    return null;
   }
 
   static saveBiography(String biography) async {
