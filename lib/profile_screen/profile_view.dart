@@ -6,6 +6,7 @@ import 'package:my_catalog/profile_screen/profile_service.dart';
 import 'package:my_catalog/profile_screen/profile_style.dart';
 import 'package:my_catalog/route_generator.dart';
 import 'package:my_catalog/utils/colors.dart';
+import 'package:my_catalog/utils/customs_components/custom_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileView extends StatefulWidget {
@@ -77,126 +78,136 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          color: MyColors.myPrimary,
-                          child: _photo.isEmpty
-                              ? Image.asset("images/Logo.png")
-                              : Image.network(
-                                  _photo,
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    debugPrint(
-                                        'Erro ao carregar imagem de perfil: $error');
-                                    return Image.asset(
-                                      "images/Logo.png",
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
-                                ),
-                        ),
+      // Removido SingleChildScrollView externo
+      body: Column(
+        // O Column principal agora é o widget que rola, se necessário.
+        children: [
+          // Seção de Informações do Perfil (não rolável)
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        color: MyColors.myPrimary,
+                        child: _photo.isEmpty
+                            ? Image.asset(
+                                "images/Logo.png",
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                _photo,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  debugPrint(
+                                      'Erro ao carregar imagem de perfil: $error');
+                                  return Image.asset(
+                                    "images/Logo.png",
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
                       ),
-                      const SizedBox(width: 15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    const SizedBox(width: 15),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(_nome,
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text("$_state - $_category",
+                            style: const TextStyle(fontSize: 12)),
+                        const SizedBox(height: 35),
+                        GestureDetector(
+                          onTap: () {
+                            ProfileService.logoutUser(context);
+                          },
+                          child: const Text("logout",
+                              style: TextStyle(color: Colors.red)),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Biografia",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        if (_biography.isEmpty ||
+                            _controllerBiography.text.isNotEmpty) {
+                          _saveBiography(); // Salva a biografia se o TextField está visível e preenchido
+                        } else {
+                          setState(() {
+                            _biography = ""; // Faz o TextField aparecer
+                          });
+                        }
+                      },
+                      child: Text(
+                        _biography.isEmpty ? "Salvar" : "Editar",
+                        style: const TextStyle(color: MyColors.myPrimary),
+                      ),
+                    ),
+                  ],
+                ),
+                _biography.isEmpty
+                    ? TextField(
+                        decoration: const InputDecoration(
+                            hintText: "Descreva sua Biografia"),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        controller: _controllerBiography,
+                      )
+                    : Text(_biography),
+                const SizedBox(height: 30),
+                SizedBox(
+                  height: 60,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      style: profileButtonStyle,
+                      onPressed: () async {
+                        debugPrint("Botão PEDIDOS pressionado!");
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_nome,
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)),
-                          Text("$_state - $_category",
-                              style: const TextStyle(fontSize: 12)),
-                          const SizedBox(height: 35),
-                          GestureDetector(
-                            onTap: () {
-                              ProfileService.logoutUser(context);
-                            },
-                            child: const Text("logout",
-                                style: TextStyle(color: Colors.red)),
+                          Text(
+                            "PEDIDOS",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_right,
+                            size: 30,
+                            weight: 3.5,
+                            color: Colors.white,
                           )
                         ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Biografia",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _biography.isEmpty
-                              ? _saveBiography()
-                              : setState(() {
-                                  _biography = "";
-                                  _controllerBiography.text = "";
-                                });
-                        },
-                        child: Text(_biography.isEmpty ? "Salvar" : "Editar",
-                            style: const TextStyle(color: MyColors.myPrimary)),
-                      ),
-                    ],
-                  ),
-                  _biography.isEmpty
-                      ? TextField(
-                          decoration: const InputDecoration(
-                              hintText: "Descreva sua Biografia"),
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          controller: _controllerBiography,
-                        )
-                      : Text(_biography),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    height: 60,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        style: profileButtonStyle,
-                        onPressed: () async {
-                          debugPrint("Botão PEDIDOS pressionado!");
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "PEDIDOS",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Icon(
-                              Icons.keyboard_arrow_right,
-                              size: 30,
-                              weight: 3.5,
-                              color: Colors.white,
-                            )
-                          ],
-                        )),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                      )),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
-            Container(
+          ),
+          Expanded(
+            child: Container(
               color: MyColors.myPrimary,
               padding: const EdgeInsets.symmetric(vertical: 20),
               width: MediaQuery.of(context).size.width,
@@ -204,19 +215,18 @@ class _ProfileViewState extends State<ProfileView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    padding: EdgeInsets.symmetric(horizontal: 25),
                     child: Text(
                         _typeAccount == "company"
                             ? "Meus Catálogos"
                             : "Catálogos Salvos",
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.normal,
                             color: Colors.white)),
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    height: 200,
+                  Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _controllerStream.stream,
                       builder: (context, snapshot) {
@@ -240,9 +250,11 @@ class _ProfileViewState extends State<ProfileView> {
                             if (snapshot.hasError) {
                               debugPrint(
                                   "Erro no StreamBuilder de Catálogos: ${snapshot.error}");
-                              return const Center(
-                                child: Text("Erro ao carregar catálogos!",
-                                    style: TextStyle(color: Colors.white)),
+                              return Center(
+                                child: Text(
+                                    "Erro ao carregar catálogos: ${snapshot.error}",
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.red)),
                               );
                             }
 
@@ -274,105 +286,39 @@ class _ProfileViewState extends State<ProfileView> {
                                     DBAddCatalog.fromDocumentSnapshotCatalog(
                                         documentSnapshot);
 
-                                return SizedBox(
-                                    width: 300,
-                                    child: Card(
-                                      elevation: 4,
-                                      child: Column(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            child: Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              height: 120,
-                                              color: MyColors.myTertiary,
-                                              child: myCatalog.catalogImage ==
-                                                      "Sem Imagem"
-                                                  ? Image.asset(
-                                                      "images/Logo.png")
-                                                  : Image.network(
-                                                      myCatalog.catalogImage,
-                                                      fit: BoxFit.cover),
-                                            ),
-                                          ),
-                                          Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 5, horizontal: 10),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              0.40,
-                                                      child: Text(
-                                                          myCatalog.catalogName,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold))),
-                                                  SizedBox(
-                                                    height: 30,
-                                                    child: ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.pushNamed(
-                                                            context,
-                                                            RouteGenerator
-                                                                .editCatalog,
-                                                            arguments:
-                                                                myCatalog);
-                                                      },
-                                                      style: ButtonStyle(
-                                                        shape: WidgetStateProperty
-                                                            .resolveWith<
-                                                                OutlinedBorder>(
-                                                          (Set<WidgetState>
-                                                              states) {
-                                                            return RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          7),
-                                                            );
-                                                          },
-                                                        ),
-                                                        backgroundColor:
-                                                            WidgetStateProperty
-                                                                .all<Color>(MyColors
-                                                                    .myPrimary),
-                                                      ),
-                                                      child: Text("Editar",
-                                                          style: TextStyle(
-                                                              color: Colors
-                                                                  .white)),
-                                                    ),
-                                                  )
-                                                ],
-                                              )),
-                                        ],
-                                      ),
-                                    ));
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: SizedBox(
+                                    width: 340,
+                                    child: CustomCatalog(
+                                      title: myCatalog.catalogName,
+                                      imageUrl: myCatalog.catalogImage,
+                                      textButton: "Editar",
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          RouteGenerator.productCatalog,
+                                          arguments:  {
+                                            'catalog': myCatalog,
+                                            'isEditing': true,
+                                          },
+
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                );
                               },
                             );
                         }
                       },
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: _typeAccount == "company"
           ? FloatingActionButton(
