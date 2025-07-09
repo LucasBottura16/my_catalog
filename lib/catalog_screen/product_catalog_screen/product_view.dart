@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:my_catalog/catalog_screen/product_catalog_screen/components/cart_manager.dart';
+import 'package:my_catalog/catalog_screen/cart_catalog_screen/components/cart_manager.dart';
 import 'package:my_catalog/catalog_screen/product_catalog_screen/components/detail_product.dart';
 import 'package:my_catalog/catalog_screen/product_catalog_screen/components/product_modal.dart';
 import 'package:my_catalog/catalog_screen/models/catalog_model.dart';
@@ -45,6 +45,7 @@ class _ProductViewState extends State<ProductView> {
         Navigator.pushNamed(
           context,
           RouteGenerator.cartView,
+          arguments: _catalog
         );
       } else {
         await showDialog(

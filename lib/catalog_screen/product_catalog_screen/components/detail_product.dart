@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_catalog/catalog_screen/models/product_model.dart';
-import 'package:my_catalog/catalog_screen/product_catalog_screen/components/cart_manager.dart';
+import 'package:my_catalog/catalog_screen/cart_catalog_screen/components/cart_manager.dart';
 import 'package:my_catalog/utils/colors.dart';
 import 'package:my_catalog/utils/customs_components/custom_button.dart';
 import 'package:my_catalog/utils/customs_components/custom_counter.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_catalog/catalog_screen/add_catalog_screen/add_catalog_view.dart';
-import 'package:my_catalog/catalog_screen/product_catalog_screen/components/cart_view.dart';
+import 'package:my_catalog/catalog_screen/cart_catalog_screen/cart_view.dart';
 import 'package:my_catalog/catalog_screen/product_catalog_screen/product_view.dart';
 import 'package:my_catalog/create_account_screen/create_account_view.dart';
 import 'package:my_catalog/home_screen/home_view.dart';
@@ -29,16 +29,14 @@ class RouteGenerator {
       case addCatalog:
         return MaterialPageRoute(builder: (_) => const AddCatalogView());
       case productCatalog:
-        if (settings.arguments is Map) {
           return MaterialPageRoute(
             builder: (_) => ProductView(
               catalog: args['catalog'],
               isEditing: args['isEditing'],
             ),
           );
-        }
       case cartView:
-        return MaterialPageRoute(builder: (_) => const CartView());
+        return MaterialPageRoute(builder: (_) => CartView(catalog: args));
       default:
         _errorRoute();
     }
