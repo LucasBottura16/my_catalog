@@ -9,6 +9,7 @@ class HomeService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     final String uid = FirebaseAuth.instance.currentUser!.uid;
+    final String? email = FirebaseAuth.instance.currentUser!.email;
 
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -30,6 +31,7 @@ class HomeService {
         prefs.setString("image", customerDocs?["imagem"]);
         prefs.setString("phone", customerDocs?["telefone"]);
         prefs.setString("biography", customerDocs?["biografia"]);
+        prefs.setString("email", email.toString());
 
         return;
       }
@@ -51,6 +53,7 @@ class HomeService {
         prefs.setString("biography", companyDocs?["biografia"]);
         prefs.setString("category", companyDocs?["categoria"]);
         prefs.setString("representative", companyDocs?["representante"]);
+        prefs.setString("email", email.toString());
 
         return;
       }

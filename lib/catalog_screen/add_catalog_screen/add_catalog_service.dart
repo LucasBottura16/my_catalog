@@ -46,6 +46,7 @@ class AddCatalogService {
       dbAddCatalog.catalogDescription = catalogDescription;
       dbAddCatalog.catalogImage = imageUrl!;
       dbAddCatalog.catalogCategory = catalogCategory;
+      dbAddCatalog.nameCompany = prefs.getString('name')!;
 
       await firestore
           .collection("Catalogos")

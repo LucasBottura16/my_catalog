@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_catalog/catalog_screen/cart_catalog_screen/cart_service.dart';
 import 'package:my_catalog/catalog_screen/cart_catalog_screen/components/cart_manager.dart';
 import 'package:my_catalog/catalog_screen/models/catalog_model.dart';
 import 'package:my_catalog/utils/colors.dart';
 import 'package:my_catalog/utils/customs_components/custom_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CartView extends StatefulWidget {
   const CartView({super.key, required this.catalog});
@@ -31,7 +29,7 @@ class _CartViewState extends State<CartView> {
     });
 
     final cartItems =
-        CartManager.items; // Get cart items directly from CartManager
+        CartManager.items;
 
     if (cartItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -43,60 +41,16 @@ class _CartViewState extends State<CartView> {
       return;
     }
 
-    try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    await CartService.addOrder(
+        context: context,
+        catalog: _catalog,
+        cartItems: cartItems);
 
-      List<Map<String, dynamic>> productsData = [];
-      for (var item in cartItems) {
-        productsData.add({
-          'productId': item.product.uid, // The UID of the product
-          'productName': item.product.nameProduct,
-          'quantity': item.quantity,
-          'unitPrice': item.product.priceProduct,
-          'totalItemPrice': item.totalPriceFormatted,
-        });
-      }
+    _onCartChanged();
 
-      Map<String, dynamic> orderData = {
-        'orderDate': Timestamp.now(),
-        'totalAmount': CartManager.totalCartPriceFormatted,
-        'products': productsData,
-        'status': 'Pendente',
-        'uidCustomer': FirebaseAuth.instance.currentUser?.uid,
-        'uidComapny': _catalog.uidCompany,
-        'uidCatalog': _catalog.uid, // Catalog ID for the order
-      };
-
-      await firestore.collection('Pedidos').add(orderData);
-      for (var item in cartItems) {
-        await CartService.updateProductQuantityAfterOrder(
-          catalogId: _catalog.uid,
-          productId: item.product.uid,
-          orderedQuantity: item.quantity,
-        );
-      }
-
-      CartManager.clearCart();
-      _onCartChanged(); // Force UI rebuild of the cart
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Pedido realizado com sucesso e estoque atualizado!')),
-      );
-
-      Navigator.pop(
-          context);
-    } catch (e) {
-      debugPrint('Erro ao finalizar pedido: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao finalizar pedido: $e')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -148,11 +102,10 @@ class _CartViewState extends State<CartView> {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  // Added const
+                Padding(
                   padding: EdgeInsets.all(16),
                   child: Text(
-                    "Carrinho de pedidos:",
+                    "Carrinho de pedidos ${_catalog.nameCompany}:",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -235,9 +188,7 @@ class _CartViewState extends State<CartView> {
                     },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: SizedBox(
+                SizedBox(
                       width: double.infinity,
                       child: CustomButton(
                         onPressed: () =>
@@ -252,7 +203,7 @@ class _CartViewState extends State<CartView> {
                         isLoading: _isLoading,
                         loadingColor: MyColors.myPrimary,
                       )),
-                ),
+                _isLoading ? SizedBox(height: 30) : const SizedBox(),
               ],
             ),
     );

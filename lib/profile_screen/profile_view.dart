@@ -78,11 +78,8 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Removido SingleChildScrollView externo
       body: Column(
-        // O Column principal agora é o widget que rola, se necessário.
         children: [
-          // Seção de Informações do Perfil (não rolável)
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -181,7 +178,7 @@ class _ProfileViewState extends State<ProfileView> {
                   child: ElevatedButton(
                       style: profileButtonStyle,
                       onPressed: () async {
-                        debugPrint("Botão PEDIDOS pressionado!");
+                        Navigator.pushNamed(context, RouteGenerator.orderView);
                       },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

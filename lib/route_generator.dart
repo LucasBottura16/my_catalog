@@ -5,6 +5,8 @@ import 'package:my_catalog/catalog_screen/product_catalog_screen/product_view.da
 import 'package:my_catalog/create_account_screen/create_account_view.dart';
 import 'package:my_catalog/home_screen/home_view.dart';
 import 'package:my_catalog/main.dart';
+import 'package:my_catalog/orders_screen/order_details/order_details_view.dart';
+import 'package:my_catalog/orders_screen/order_list/order_list_view.dart';
 
 class RouteGenerator {
   static const String routeLogin = "/routes";
@@ -13,6 +15,8 @@ class RouteGenerator {
   static const String addCatalog = "/addCatalog";
   static const String productCatalog = "/productCatalog";
   static const String cartView = "/cartView";
+  static const String orderView = "/orderView";
+  static const String orderDetails = "/orderDetails";
 
   static var args;
 
@@ -37,6 +41,12 @@ class RouteGenerator {
           );
       case cartView:
         return MaterialPageRoute(builder: (_) => CartView(catalog: args));
+      case orderView:
+        return MaterialPageRoute(builder: (_) => OrderView());
+        case orderDetails:
+        return MaterialPageRoute(
+          builder: (_) => OrderDetailsView(order: args),
+        );
       default:
         _errorRoute();
     }

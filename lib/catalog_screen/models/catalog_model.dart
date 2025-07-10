@@ -8,6 +8,7 @@ class DBAddCatalog {
   String? _uid;
   String? _uidCompany;
   String? _data;
+  String? _nameCompany;
 
   DBAddCatalog();
 
@@ -19,6 +20,7 @@ class DBAddCatalog {
     catalogImage = documentSnapshot["imagem do catalogo"];
     uidCompany = documentSnapshot["uidEmpresa"];
     data = documentSnapshot["data"];
+    nameCompany = documentSnapshot["nome da empresa"];
   }
 
   Map<String, dynamic> toMapCatalog(uid, uidCompany) {
@@ -29,11 +31,17 @@ class DBAddCatalog {
       'imagem do catalogo': catalogImage,
       'uid': uid,
       'data': DateTime.now().toString(),
-      'uidEmpresa': uidCompany
+      'uidEmpresa': uidCompany,
+      'nome da empresa': nameCompany,
     };
     return map;
   }
 
+  String get nameCompany => _nameCompany!;
+
+  set nameCompany(String value) {
+    _nameCompany = value;
+  }
 
   String get uidCompany => _uidCompany!;
 
