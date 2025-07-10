@@ -6,6 +6,7 @@ import 'package:my_catalog/profile_screen/profile_service.dart';
 import 'package:my_catalog/profile_screen/profile_style.dart';
 import 'package:my_catalog/route_generator.dart';
 import 'package:my_catalog/utils/colors.dart';
+import 'package:my_catalog/utils/customs_components/custom_button.dart';
 import 'package:my_catalog/utils/customs_components/custom_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -162,15 +163,18 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   ],
                 ),
-                _biography.isEmpty
-                    ? TextField(
-                        decoration: const InputDecoration(
-                            hintText: "Descreva sua Biografia"),
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        controller: _controllerBiography,
-                      )
-                    : Text(_biography),
+                SizedBox(
+                  height: 80,
+                  child: _biography.isEmpty
+                      ? TextField(
+                          decoration: const InputDecoration(
+                              hintText: "Descreva sua Biografia"),
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          controller: _controllerBiography,
+                        )
+                      : Text(_biography),
+                ),
                 const SizedBox(height: 30),
                 SizedBox(
                   height: 60,
@@ -209,18 +213,30 @@ class _ProfileViewState extends State<ProfileView> {
               padding: const EdgeInsets.symmetric(vertical: 20),
               width: MediaQuery.of(context).size.width,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 25),
-                    child: Text(
-                        _typeAccount == "company"
-                            ? "Meus Catálogos"
-                            : "Catálogos Salvos",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.white)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                            _typeAccount == "company"
+                                ? "Meus Catálogos"
+                                : "Catálogos Salvos",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white)),
+
+                        CustomButton(onPressed: (){}, title: "+",
+                            titleSize: 20,
+                            titleColor: MyColors.myPrimary,
+                            buttonEdgeInsets: const EdgeInsets.only(
+                               left: 20),
+                        ),
+                      ],
+                    )
                   ),
                   const SizedBox(height: 10),
                   Expanded(
@@ -295,11 +311,10 @@ class _ProfileViewState extends State<ProfileView> {
                                         Navigator.pushNamed(
                                           context,
                                           RouteGenerator.productCatalog,
-                                          arguments:  {
+                                          arguments: {
                                             'catalog': myCatalog,
                                             'isEditing': true,
                                           },
-
                                         );
                                       },
                                     ),
