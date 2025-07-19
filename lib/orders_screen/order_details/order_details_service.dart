@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:my_catalog/orders_screen/models/order_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderDetailsService {
 
@@ -92,5 +93,11 @@ class OrderDetailsService {
     } catch (e) {
       debugPrint('Erro ao incrementar a quantidade do produto no Firestore: $e');
     }
+  }
+
+  static launchWhatsApp(String phoneNumber, String name) async {
+    String cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    final url = 'whatsapp://send?phone=55$cleanPhoneNumber&text=Olá,$name!';
+    launchUrl(Uri.parse(url));
   }
 }

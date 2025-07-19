@@ -83,11 +83,10 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
         ],
       ),
       body: SingleChildScrollView(
-        // <--- Adicionado SingleChildScrollView aqui
         child: Column(
           // Outer Column
           crossAxisAlignment:
-              CrossAxisAlignment.start, // Para alinhar o conteúdo à esquerda
+              CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -106,9 +105,16 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
                   const SizedBox(height: 20),
                   CustomButton(
                     onPressed: () {
-                      debugPrint(_order.productsData.toString());
+                      String phoneSelected = _order.uidCompany != _uid ?
+                          _order.phoneCompany :
+                          _order.phoneCustomer;
+                      String nameSelected = _order.uidCompany != _uid ?
+                          _order.nameCompany :
+                          _order.nameCustomer;
+                      OrderDetailsService.launchWhatsApp(phoneSelected, nameSelected);
                     },
-                    title: "CHAMAR NO WHATSAPP",
+                    title: _order.uidCompany == _uid ? "CHAMAR CLEINTE NO WHATSAPP" :
+                        "CHAMAR EMPRESA NO WHATSAPP",
                     titleColor: Colors.white,
                     buttonColor: Colors.green,
                     buttonEdgeInsets: const EdgeInsets.fromLTRB(50, 15, 50, 15),
@@ -129,7 +135,7 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
             ListView.builder(
               shrinkWrap: true,
               physics:
-                  const NeverScrollableScrollPhysics(), // <--- Desabilita a própria rolagem da list
+                  const NeverScrollableScrollPhysics(),
               itemCount: _order.productsData.length,
               itemBuilder: (context, index) {
                 final cartItem = _order.productsData[index];

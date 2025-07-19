@@ -46,6 +46,8 @@ class CartService {
       dbOrderModel.emailCustomer = prefs.getString('email') ?? '';
       dbOrderModel.phoneCustomer = prefs.getString('phone') ?? '';
       dbOrderModel.addressCustomer = prefs.getString('address') ?? '';
+      dbOrderModel.phoneCompany = catalog.phoneCompany;
+
 
       String uid = RandomKeys().generateRandomString();
 

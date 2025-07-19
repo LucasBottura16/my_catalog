@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:my_catalog/catalog_screen/home_catalog_screen/home_catalog_service.dart';
 import 'package:my_catalog/catalog_screen/models/catalog_model.dart';
 import 'package:my_catalog/route_generator.dart';
+import 'package:my_catalog/utils/colors.dart';
 import 'package:my_catalog/utils/customs_components/custom_catalog.dart';
 import 'package:my_catalog/utils/customs_components/custom_input_field.dart';
 
@@ -79,9 +80,9 @@ class _CatalogViewState extends State<CatalogView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text("Carregando Catálogos...",
-                                  style: TextStyle(color: Colors.white)),
+                                  style: TextStyle(color: MyColors.myPrimary)),
                               SizedBox(height: 16),
-                              CircularProgressIndicator(color: Colors.white),
+                              CircularProgressIndicator(color:MyColors.myPrimary),
                             ],
                           ),
                         );
@@ -92,14 +93,14 @@ class _CatalogViewState extends State<CatalogView> {
                               "Erro no StreamBuilder de Catálogos: ${snapshot.error}");
                           return const Center(
                             child: Text("Erro ao carregar catálogos!",
-                                style: TextStyle(color: Colors.white)),
+                                style: TextStyle(color: MyColors.myPrimary)),
                           );
                         }
 
                         QuerySnapshot? querySnapshot = snapshot.data;
 
                         if (querySnapshot == null || querySnapshot.docs.isEmpty) {
-                          return const Center(
+                          return  Center(
                             child: Padding(
                               padding: EdgeInsets.all(20),
                               child: Text(
@@ -108,7 +109,7 @@ class _CatalogViewState extends State<CatalogView> {
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                    color: MyColors.myPrimary),
                               ),
                             ),
                           );

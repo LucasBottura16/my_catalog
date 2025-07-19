@@ -19,6 +19,7 @@ class AddCatalogService {
       String catalogDescription,
       String catalogImage,
       String catalogCategory,
+
       ) async {
     if (catalogName == "" || catalogDescription == "" || catalogImage == "" || catalogCategory == "") {
       showDialog(
@@ -49,6 +50,7 @@ class AddCatalogService {
       dbAddCatalog.catalogImage = imageUrl!;
       dbAddCatalog.catalogCategory = catalogCategory;
       dbAddCatalog.nameCompany = prefs.getString('name')!;
+      dbAddCatalog.phoneCompany = prefs.getString('phone')!;
 
       await firestore
           .collection("Catalogos")

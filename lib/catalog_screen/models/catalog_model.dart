@@ -9,6 +9,7 @@ class DBAddCatalog {
   String? _uidCompany;
   String? _data;
   String? _nameCompany;
+  String? _phoneCompany;
 
   DBAddCatalog();
 
@@ -21,6 +22,7 @@ class DBAddCatalog {
     uidCompany = documentSnapshot["uidEmpresa"];
     data = documentSnapshot["data"];
     nameCompany = documentSnapshot["nome da empresa"];
+    phoneCompany = documentSnapshot["telefone da empresa"];
   }
 
   Map<String, dynamic> toMapCatalog(uid, uidCompany) {
@@ -33,8 +35,14 @@ class DBAddCatalog {
       'data': DateTime.now().toString(),
       'uidEmpresa': uidCompany,
       'nome da empresa': nameCompany,
+      'telefone da empresa': _phoneCompany,
     };
     return map;
+  }
+
+  String get phoneCompany => _phoneCompany!;
+  set phoneCompany(String value) {
+    _phoneCompany = value;
   }
 
   String get nameCompany => _nameCompany!;

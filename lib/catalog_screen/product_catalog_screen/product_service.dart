@@ -184,31 +184,23 @@ class ProductService {
       final FirebaseStorage storage = FirebaseStorage.instance;
       final Reference raiz = storage.ref();
 
-      // Construindo o caminho do arquivo no Storage
       Reference fileRef = raiz.child("Catalogos").child(uidCatalog).child("Produtos");
 
-      // Se for edição, mantemos a mesma estrutura de pastas
       if (edit) {
         fileRef = fileRef.child(title).child("$title.png");
       } else {
-        // Para novos uploads, podemos adicionar um timestamp para evitar conflitos
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        fileRef = fileRef.child("${title}_$timestamp").child("$title.png");
+        fileRef = fileRef.child(title).child("$title.png");
       }
 
-      // Upload para Firebase Storage
       if (kIsWeb) {
-        // Para web - pode receber XFile ou path temporário
         final XFile image = picker is XFile ? picker : XFile(picker);
         final bytes = await image.readAsBytes();
         await fileRef.putData(bytes);
       } else {
-        // Para mobile - pode receber File ou path
         final File imageFile = picker is File ? picker : File(picker.toString());
         await fileRef.putFile(imageFile);
       }
 
-      // Retorna a URL de download
       return await fileRef.getDownloadURL();
 
     } catch (e) {

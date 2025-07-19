@@ -14,6 +14,7 @@ class DBOrderModel {
   String? _nameCustomer;
   String? _emailCustomer;
   String? _phoneCustomer;
+  String? _phoneCompany;
   String? _addressCustomer;
 
   DBOrderModel();
@@ -33,6 +34,7 @@ class DBOrderModel {
     _emailCustomer = documentSnapshot["emailCustomer"];
     _phoneCustomer = documentSnapshot["phoneCustomer"];
     _addressCustomer = documentSnapshot["addressCustomer"];
+    _phoneCompany = documentSnapshot["phoneCompany"];
   }
 
   Map<String, dynamic> toMap(uid) {
@@ -50,11 +52,16 @@ class DBOrderModel {
       'nameCustomer': _nameCustomer,
       'emailCustomer': _emailCustomer,
       'phoneCustomer': _phoneCustomer,
+      'phoneCompany': _phoneCompany,
       'addressCustomer': _addressCustomer,
     };
     return map;
   }
 
+  String get phoneCompany => _phoneCompany!;
+  set phoneCompany(String value) {
+    _phoneCompany = value;
+  }
 
   String get emailCustomer => _emailCustomer!;
 

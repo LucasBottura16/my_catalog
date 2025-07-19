@@ -60,8 +60,6 @@ class ProfileService {
       });
       prefs.setString("biography", biography);
     }
-
-
   }
 
 }
