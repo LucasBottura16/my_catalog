@@ -98,7 +98,7 @@ class _AddCatalogViewState extends State<AddCatalogView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Add Catalog',
+          'Adicionar Catalogo',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: MyColors.myPrimary,

@@ -70,72 +70,85 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedButton = true;
-                              });
-                            },
-                            style: ButtonStyle(
-                              shape: WidgetStateProperty.resolveWith<
-                                  OutlinedBorder>(
-                                (Set<WidgetState> states) {
-                                  return RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    side: BorderSide(
-                                      width:
-                                          _selectedButton == true ? 0.0 : 1.0,
-                                    ),
-                                  );
-                                },
-                              ),
-                              backgroundColor: WidgetStateProperty.all<Color>(
+                        Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _selectedButton = true;
+                                });
+                              },
+                              style: ButtonStyle(
+                                shape: WidgetStateProperty.resolveWith<
+                                    OutlinedBorder>(
+                                  (Set<WidgetState> states) {
+                                    return RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      side: BorderSide(
+                                        width:
+                                            _selectedButton == true ? 0.0 : 1.0,
+                                        color: _selectedButton == true
+                                            ? MyColors.myPrimary
+                                            : MyColors.myPrimary,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                backgroundColor: WidgetStateProperty.all<Color>(
                                   _selectedButton == true
                                       ? MyColors.myPrimary
-                                      : MyColors.mySecondary),
-                              padding: WidgetStateProperty.all<
-                                      EdgeInsetsGeometry>(
-                                  const EdgeInsets.fromLTRB(50, 13, 50, 13)),
-                            ),
-                            child: Text("Cliente",
-                                style: TextStyle(
-                                    color: _selectedButton == true
-                                        ? Colors.white
-                                        : MyColors.myPrimary))),
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedButton = false;
-                              });
-                            },
-                            style: ButtonStyle(
-                              shape: WidgetStateProperty.resolveWith<
-                                  OutlinedBorder>(
-                                (Set<WidgetState> states) {
-                                  return RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    side: BorderSide(
-                                      width:
-                                          _selectedButton == false ? 0.0 : 1.0,
-                                    ),
-                                  );
-                                },
+                                      : MyColors.mySecondary,
+                                ),
+                                padding: WidgetStateProperty.all(
+                                    const EdgeInsets.symmetric(vertical: 12)),
                               ),
-                              backgroundColor: WidgetStateProperty.all<Color>(
-                                  _selectedButton == false
-                                      ? MyColors.myPrimary
-                                      : MyColors.mySecondary),
-                              padding: WidgetStateProperty.all<
-                                      EdgeInsetsGeometry>(
-                                  const EdgeInsets.fromLTRB(50, 13, 50, 13)),
-                            ),
-                            child: Text(
-                              "Empresa",
-                              style: TextStyle(
-                                  color: _selectedButton == false
-                                      ? Colors.white
-                                      : MyColors.myPrimary),
-                            ))
+                              child: Text("Cliente",
+                                  style: TextStyle(
+                                      color: _selectedButton == true
+                                          ? Colors.white
+                                          : MyColors.myPrimary))),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedButton = false;
+                                  });
+                                },
+                                style: ButtonStyle(
+                                  shape: WidgetStateProperty.resolveWith<
+                                      OutlinedBorder>(
+                                    (Set<WidgetState> states) {
+                                      return RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        side: BorderSide(
+                                          width: _selectedButton == false
+                                              ? 0.0
+                                              : 1.0,
+                                          color: _selectedButton == false
+                                              ? MyColors.myPrimary
+                                              : MyColors.myPrimary,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  backgroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                    _selectedButton == false
+                                        ? MyColors.myPrimary
+                                        : MyColors.mySecondary,
+                                  ),
+                                  padding: WidgetStateProperty.all(
+                                      const EdgeInsets.symmetric(vertical: 12)),
+                                ),
+                                child: Text(
+                                  "Empresa",
+                                  style: TextStyle(
+                                      color: _selectedButton == false
+                                          ? Colors.white
+                                          : MyColors.myPrimary),
+                                )))
                       ],
                     ),
                     const SizedBox(height: 20),

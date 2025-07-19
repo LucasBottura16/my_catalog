@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_catalog/catalog_screen/models/catalog_model.dart';
 import 'package:my_catalog/utils/random_key.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,21 +61,34 @@ class AddCatalogService {
 
   static Future<String?> uploadImages(
       String picker, String title, String uid) async {
-    if (picker == "Sem Imagem") {
+    if (picker == "Sem Imagem" || picker.isEmpty) {
       debugPrint("Sem Imagem");
       return null;
-    } else {
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference raiz = storage.ref();
-      Reference file = raiz
+    }
+
+    try {
+      final FirebaseStorage storage = FirebaseStorage.instance;
+      final Reference raiz = storage.ref();
+      final Reference file = raiz
           .child("Catalogos")
           .child(uid)
           .child("$title.png");
 
-      UploadTask uploadTask = file.putFile(File(picker));
-      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-      String url = await taskSnapshot.ref.getDownloadURL();
-      return url;
+      if (kIsWeb) {
+        final XFile image = XFile(picker);
+        final bytes = await image.readAsBytes();
+        final UploadTask uploadTask = file.putData(bytes);
+        final TaskSnapshot taskSnapshot = await uploadTask;
+        return await taskSnapshot.ref.getDownloadURL();
+      } else {
+        final File imageFile = File(picker);
+        final UploadTask uploadTask = file.putFile(imageFile);
+        final TaskSnapshot taskSnapshot = await uploadTask;
+        return await taskSnapshot.ref.getDownloadURL();
+      }
+    } catch (e) {
+      debugPrint("Erro ao fazer upload da imagem: $e");
+      return null;
     }
   }
 

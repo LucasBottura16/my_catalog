@@ -4,6 +4,7 @@ import 'package:my_catalog/catalog_screen/cart_catalog_screen/components/cart_ma
 import 'package:my_catalog/catalog_screen/models/catalog_model.dart';
 import 'package:my_catalog/utils/colors.dart';
 import 'package:my_catalog/utils/customs_components/custom_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CartView extends StatefulWidget {
   const CartView({super.key, required this.catalog});
@@ -24,6 +25,23 @@ class _CartViewState extends State<CartView> {
   }
 
   Future<void> _placeOrder(BuildContext context) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (CartManager.items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Seu carrinho está vazio!')),
+      );
+      return;
+    }
+
+    if(_catalog.uidCompany == prefs.getString('uid')){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Você não pode fazer pedidos para sua própria empresa!')),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
