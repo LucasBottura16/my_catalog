@@ -53,6 +53,7 @@ class _ProfileViewState extends State<ProfileView> {
       _typeAccount = prefs.getString('typeAccount') ?? '';
     });
     _controllerBiography.text = _biography;
+    debugPrint(_biography);
   }
 
   _saveBiography() async {
@@ -76,170 +77,204 @@ class _ProfileViewState extends State<ProfileView> {
     }
   }
 
+  _deleteCatalog(String catalogId) async {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("Excluir Catálogo"),
+              content: const Text(
+                  "Você tem certeza que deseja excluir este catálogo?"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancelar"),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    await ProfileService.deleteCatalog(catalogId);
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Excluir",
+                      style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: Container(
-                        width: 120,
-                        height: 120,
-                        color: MyColors.myPrimary,
-                        child: _photo.isEmpty
-                            ? Image.asset(
-                                "images/Logo.png",
-                                fit: BoxFit.cover,
-                              )
-                            : Image.network(
-                                _photo,
-                                width: 120,
-                                height: 120,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  debugPrint(
-                                      'Erro ao carregar imagem de perfil: $error');
-                                  return Image.asset(
-                                    "images/Logo.png",
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              ),
+      body: SingleChildScrollView(
+        // <--- Adicionado SingleChildScrollView aqui
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          color: MyColors.myPrimary,
+                          child: _photo.isEmpty
+                              ? Image.asset(
+                                  "images/Logo.png",
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  _photo,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    debugPrint(
+                                        'Erro ao carregar imagem de perfil: $error');
+                                    return Image.asset(
+                                      "images/Logo.png",
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(_nome,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        Text("$_state - $_category",
-                            style: const TextStyle(fontSize: 12)),
-                        const SizedBox(height: 35),
-                        GestureDetector(
-                          onTap: () {
-                            ProfileService.logoutUser(context);
-                          },
-                          child: const Text("logout",
-                              style: TextStyle(color: Colors.red)),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Biografia",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        if (_biography.isEmpty ||
-                            _controllerBiography.text.isNotEmpty) {
-                          _saveBiography(); // Salva a biografia se o TextField está visível e preenchido
-                        } else {
-                          setState(() {
-                            _biography = ""; // Faz o TextField aparecer
-                          });
-                        }
-                      },
-                      child: Text(
-                        _biography.isEmpty ? "Salvar" : "Editar",
-                        style: const TextStyle(color: MyColors.myPrimary),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 80,
-                  child: _biography.isEmpty
-                      ? TextField(
-                          decoration: const InputDecoration(
-                              hintText: "Descreva sua Biografia"),
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          controller: _controllerBiography,
-                        )
-                      : Text(_biography),
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  height: 60,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      style: profileButtonStyle,
-                      onPressed: () async {
-                        Navigator.pushNamed(context, RouteGenerator.orderView);
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      const SizedBox(width: 15),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "PEDIDOS",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Icon(
-                            Icons.keyboard_arrow_right,
-                            size: 30,
-                            weight: 3.5,
-                            color: Colors.white,
+                          Text(_nome,
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)),
+                          Text("$_state - $_category",
+                              style: const TextStyle(fontSize: 12)),
+                          const SizedBox(height: 35),
+                          GestureDetector(
+                            onTap: () {
+                              ProfileService.logoutUser(context);
+                            },
+                            child: const Text("logout",
+                                style: TextStyle(color: Colors.red)),
                           )
                         ],
-                      )),
-                ),
-                const SizedBox(height: 20),
-              ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Biografia",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          _biography == ""
+                              ? _saveBiography()
+                              : setState(() {
+                                  _biography = "";
+                                });
+                        },
+                        child: Text(
+                          _biography == "" ? "Salvar" : "Editar",
+                          style: const TextStyle(color: MyColors.myPrimary),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 80,
+                    child: _biography == ""
+                        ? TextField(
+                            decoration: const InputDecoration(
+                                hintText: "Descreva sua Biografia"),
+                            maxLines: null,
+                            keyboardType: TextInputType.multiline,
+                            controller: _controllerBiography,
+                          )
+                        : Text(_biography),
+                  ),
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    height: 60,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                        style: profileButtonStyle,
+                        onPressed: () async {
+                          Navigator.pushNamed(
+                              context, RouteGenerator.orderView);
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "PEDIDOS",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_right,
+                              size: 30,
+                              weight: 3.5,
+                              color: Colors.white,
+                            )
+                          ],
+                        )),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Container(
+            // REMOVIDO: Expanded aqui. Um Expanded diretamente dentro de um Column
+            // que está dentro de um SingleChildScrollView causa conflito.
+            // Em vez disso, o Container terá uma altura definida pelo seu conteúdo.
+            Container(
+              // <--- Container sem Expanded
               color: MyColors.myPrimary,
               padding: const EdgeInsets.symmetric(vertical: 20),
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 25),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                            _typeAccount == "company"
-                                ? "Meus Catálogos"
-                                : "Catálogos Salvos",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.white)),
-
-                        CustomButton(onPressed: (){}, title: "+",
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                              _typeAccount == "company"
+                                  ? "Meus Catálogos"
+                                  : "Catálogos Salvos",
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          _typeAccount == "company"
+                              ?
+                          CustomButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, RouteGenerator.addCatalog);
+                            },
+                            title: "+",
                             titleSize: 20,
                             titleColor: MyColors.myPrimary,
-                            buttonEdgeInsets: const EdgeInsets.only(
-                               left: 20),
-                        ),
-                      ],
-                    )
-                  ),
+                            buttonEdgeInsets: const EdgeInsets.only(left: 20),
+                          ): const SizedBox.shrink(),
+                        ],
+                      )),
                   const SizedBox(height: 10),
-                  Expanded(
+                  SizedBox(
+                    // <--- Adicionado SizedBox com altura fixa para o ListView.builder
+                    height: 180,
+                    // Ajuste esta altura conforme o tamanho dos seus CustomCatalog
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _controllerStream.stream,
                       builder: (context, snapshot) {
@@ -302,23 +337,27 @@ class _ProfileViewState extends State<ProfileView> {
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 10),
                                   child: SizedBox(
-                                    width: 340,
-                                    child: CustomCatalog(
-                                      title: myCatalog.catalogName,
-                                      imageUrl: myCatalog.catalogImage,
-                                      textButton: "Editar",
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          RouteGenerator.productCatalog,
-                                          arguments: {
-                                            'catalog': myCatalog,
-                                            'isEditing': true,
+                                      width: 340,
+                                      child: GestureDetector(
+                                        onLongPress: () {
+                                          _deleteCatalog(myCatalog.uid);
+                                        },
+                                        child: CustomCatalog(
+                                          title: myCatalog.catalogName,
+                                          imageUrl: myCatalog.catalogImage,
+                                          textButton: "Editar",
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                              context,
+                                              RouteGenerator.productCatalog,
+                                              arguments: {
+                                                'catalog': myCatalog,
+                                                'isEditing': true,
+                                              },
+                                            );
                                           },
-                                        );
-                                      },
-                                    ),
-                                  ),
+                                        ),
+                                      )),
                                 );
                               },
                             );
@@ -329,21 +368,9 @@ class _ProfileViewState extends State<ProfileView> {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      floatingActionButton: _typeAccount == "company"
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.pushNamed(context, RouteGenerator.addCatalog);
-              },
-              tooltip: 'Adicionar',
-              backgroundColor: MyColors.myPrimary,
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.add),
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

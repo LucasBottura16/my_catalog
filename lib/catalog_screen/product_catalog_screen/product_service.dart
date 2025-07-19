@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_catalog/catalog_screen/models/product_model.dart';
 import 'package:my_catalog/utils/random_key.dart';
 
@@ -167,25 +169,51 @@ class ProductService {
   }
 
   static Future<String?> uploadImages(
-      String picker, String title, String uidCatalog, bool edit) async {
-    if (picker == "Sem Imagem") {
+      dynamic picker,
+      String title,
+      String uidCatalog,
+      bool edit,
+      ) async {
+    // Caso não tenha imagem selecionada
+    if (picker == null || picker == "Sem Imagem" || (picker is String && picker.isEmpty)) {
       debugPrint("Sem Imagem");
       return null;
-    } else {
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference raiz = storage.ref();
+    }
 
-      Reference file = raiz
-          .child("Catalogos")
-          .child(uidCatalog)
-          .child("Produtos")
-          .child(title)
-          .child("$title.png");
+    try {
+      final FirebaseStorage storage = FirebaseStorage.instance;
+      final Reference raiz = storage.ref();
 
-      UploadTask uploadTask = file.putFile(File(picker));
-      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-      String url = await taskSnapshot.ref.getDownloadURL();
-      return url;
+      // Construindo o caminho do arquivo no Storage
+      Reference fileRef = raiz.child("Catalogos").child(uidCatalog).child("Produtos");
+
+      // Se for edição, mantemos a mesma estrutura de pastas
+      if (edit) {
+        fileRef = fileRef.child(title).child("$title.png");
+      } else {
+        // Para novos uploads, podemos adicionar um timestamp para evitar conflitos
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        fileRef = fileRef.child("${title}_$timestamp").child("$title.png");
+      }
+
+      // Upload para Firebase Storage
+      if (kIsWeb) {
+        // Para web - pode receber XFile ou path temporário
+        final XFile image = picker is XFile ? picker : XFile(picker);
+        final bytes = await image.readAsBytes();
+        await fileRef.putData(bytes);
+      } else {
+        // Para mobile - pode receber File ou path
+        final File imageFile = picker is File ? picker : File(picker.toString());
+        await fileRef.putFile(imageFile);
+      }
+
+      // Retorna a URL de download
+      return await fileRef.getDownloadURL();
+
+    } catch (e) {
+      debugPrint("Erro ao fazer upload da imagem: $e");
+      return null;
     }
   }
 }

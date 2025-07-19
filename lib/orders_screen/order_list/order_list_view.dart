@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,29 +16,54 @@ class OrderView extends StatefulWidget {
 }
 
 class _OrderViewState extends State<OrderView> {
-  final _controllerStream = StreamController<QuerySnapshot>.broadcast();
+  final _controllerStreamCustomer = StreamController<QuerySnapshot>.broadcast();
+  final _controllerStreamCompany = StreamController<QuerySnapshot>.broadcast();
+
+  bool _selectedButton = true;
 
   String _typeAccount = "";
+
+  Stream<QuerySnapshot>? _currentOrdersStream;
 
   _verifyAccount() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _typeAccount = prefs.getString('typeAccount') ?? '';
+
+    });
+  }
+
+  void _updateSelectedButton(bool value) {
+    setState(() {
+      _selectedButton = value;
+
+      if (value) {
+        OrderService.addListenerOrderCustomer(_controllerStreamCustomer);
+        _currentOrdersStream = _controllerStreamCustomer.stream;
+      } else {
+        OrderService.addListenerOrderCompany(_controllerStreamCompany);
+        _currentOrdersStream = _controllerStreamCompany.stream;
+      }
     });
   }
 
   @override
   void initState() {
     super.initState();
-    OrderService.addListenerOrder(_controllerStream);
+    _currentOrdersStream = _controllerStreamCustomer.stream;
+
+    OrderService.addListenerOrderCustomer(_controllerStreamCustomer);
+    OrderService.addListenerOrderCompany(_controllerStreamCompany);
+
     _verifyAccount();
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Pedidos",
           style: TextStyle(color: Colors.white),
         ),
@@ -49,150 +73,232 @@ class _OrderViewState extends State<OrderView> {
           Image.asset("images/Logo.png", width: 70, height: 70), // Sua logo
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _controllerStream.stream,
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                    return const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Carregando Pedidos...",
-                              style: TextStyle(color: MyColors.myPrimary)),
-                          SizedBox(height: 10),
-                          CircularProgressIndicator(color: MyColors.myPrimary),
-                        ],
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _updateSelectedButton(true);
+                    },
+                    style: ButtonStyle(
+                      shape: WidgetStateProperty.resolveWith<OutlinedBorder>(
+                            (Set<WidgetState> states) {
+                          return RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: BorderSide(
+                              width: _selectedButton == true ? 0.0 : 1.0,
+                              color: _selectedButton == true ? MyColors.myPrimary : MyColors.myPrimary,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  case ConnectionState.active:
-                  case ConnectionState.done:
-                    if (snapshot.hasError) {
-                      debugPrint(
-                          "Erro no StreamBuilder de Pedidos: ${snapshot.error}");
-                      return Center(
-                        child: Text(
-                            "Erro ao carregar Pedidos: ${snapshot.error}",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.red)),
-                      );
-                    }
-
-                    QuerySnapshot? querySnapshot = snapshot.data;
-
-                    if (querySnapshot == null || querySnapshot.docs.isEmpty) {
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        _selectedButton == true
+                            ? MyColors.myPrimary
+                            : MyColors.mySecondary,
+                      ),
+                      padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 12)),
+                    ),
+                    child: Text(
+                      "Meus Pedidos",
+                      style: TextStyle(
+                        color: _selectedButton == true
+                            ? Colors.white
+                            : MyColors.myPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded( // Use Expanded
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _updateSelectedButton(false);
+                    },
+                    style: ButtonStyle(
+                      shape: WidgetStateProperty.resolveWith<OutlinedBorder>(
+                            (Set<WidgetState> states) {
+                          return RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: BorderSide(
+                              width: _selectedButton == false ? 0.0 : 1.0,
+                              color: _selectedButton == false ? MyColors.myPrimary : MyColors.myPrimary,
+                            ),
+                          );
+                        },
+                      ),
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        _selectedButton == false
+                            ? MyColors.myPrimary
+                            : MyColors.mySecondary,
+                      ),
+                      padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 12)),
+                    ),
+                    child: Text(
+                      "Pedidos da Empresa",
+                      style: TextStyle(
+                        color: _selectedButton == false
+                            ? Colors.white
+                            : MyColors.myPrimary,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _selectedButton ? "Meus Pedidos" : "Pedidos da Empresa",
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: MyColors.myPrimary,
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _currentOrdersStream,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
                       return const Center(
-                        child: Text(
-                          "Nenhum Pedido encontrado!",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: MyColors.myPrimary),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Carregando Pedidos...",
+                                style: TextStyle(color: MyColors.myPrimary)),
+                            SizedBox(height: 10),
+                            CircularProgressIndicator(color: MyColors.myPrimary),
+                          ],
                         ),
                       );
-                    }
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: querySnapshot.docs.length,
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot documentSnapshot =
-                            querySnapshot.docs[index];
-                        DBOrderModel myOrder =
-                            DBOrderModel.fromDocumentSnapshot(documentSnapshot);
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 20),
-                            Row(
-                              children: [
-                                Text(DateFormat('dd/MM/yyyy')
-                                    .format(myOrder.orderDate)),
-                                Text(' - '),
-                                Text(
-                                  myOrder.status,
-                                  style: TextStyle(
-                                      color: myOrder.status == 'Pendente'
-                                          ? Colors.yellow.shade800
-                                          : myOrder.status ==
-                                          "Cancelado"
-                                          ? Colors.red
-                                          : Colors.green),
-                                ),
-                              ],
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, RouteGenerator.orderDetails,
-                                    arguments: myOrder);
-                              },
-                              child: Card(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                  "Pedido: ${myOrder.uidOrder}"),
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                _typeAccount == "company"
-                                                    ? myOrder.nameCustomer
-                                                    : myOrder.nameCompany,
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                myOrder.nameCatalog,
-                                                style: TextStyle(
-                                                    color: Colors.black54),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            myOrder.totalAmount,
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                color:
-                                                    myOrder.status == 'Pendente'
-                                                        ? Colors.yellow.shade800
-                                                        : myOrder.status ==
-                                                                "Cancelado"
-                                                            ? Colors.red
-                                                            : Colors.green),
-                                          )
-                                        ],
-                                      ))),
-                            )
-                          ],
+                    case ConnectionState.active:
+                    case ConnectionState.done:
+                      if (snapshot.hasError) {
+                        debugPrint(
+                            "Erro no StreamBuilder de Pedidos: ${snapshot.error}");
+                        return Center(
+                          child: Text(
+                              "Erro ao carregar Pedidos: ${snapshot.error}",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.red)),
                         );
-                      },
-                    );
-                }
-              },
+                      }
+
+                      QuerySnapshot? querySnapshot = snapshot.data;
+
+                      if (querySnapshot == null || querySnapshot.docs.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            "Nenhum Pedido encontrado!",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: MyColors.myPrimary),
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        itemCount: querySnapshot.docs.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot documentSnapshot =
+                          querySnapshot.docs[index];
+                          DBOrderModel myOrder =
+                          DBOrderModel.fromDocumentSnapshot(documentSnapshot);
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Text(DateFormat('dd/MM/yyyy')
+                                      .format(myOrder.orderDate)),
+                                  const Text(' - '),
+                                  Text(
+                                    myOrder.status,
+                                    style: TextStyle(
+                                        color: myOrder.status == 'Pendente'
+                                            ? Colors.yellow.shade800
+                                            : myOrder.status == "Cancelado"
+                                            ? Colors.red
+                                            : Colors.green),
+                                  ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, RouteGenerator.orderDetails,
+                                      arguments: myOrder);
+                                },
+                                child: Card(
+                                    margin: const EdgeInsets.symmetric(vertical: 10),
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                 Text(
+                                                  "Pedido: ${myOrder.uidOrder}"),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  _typeAccount == "company"
+                                                      ? myOrder.nameCustomer
+                                                      : myOrder.nameCompany,
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  myOrder.nameCatalog,
+                                                  style: const TextStyle(
+                                                      color: Colors.black54),
+                                                ),
+                                              ],
+                                            ),
+                                            Text(
+                                              myOrder.totalAmount,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: myOrder.status == 'Pendente'
+                                                      ? Colors.yellow.shade800
+                                                      : myOrder.status ==
+                                                      "Cancelado"
+                                                      ? Colors.red
+                                                      : Colors.green),
+                                            )
+                                          ],
+                                        ))),
+                              )
+                            ],
+                          );
+                        },
+                      );
+                  }
+                },
+              ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

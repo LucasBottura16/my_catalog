@@ -7,6 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileService {
 
+  static Future<void> deleteCatalog(String uid) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    await firestore.collection("Catalogos")
+        .doc(uid)
+        .delete();
+  }
+
   static Future<void> logoutUser(context)async {
     FirebaseAuth auth = FirebaseAuth.instance;
     auth.signOut().then((value) =>
