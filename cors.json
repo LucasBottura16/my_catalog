@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:52204","https://botturatech.com.br"],
+    "method": ["GET"],
+    "responseHeader": ["Content-Type"],
+    "maxAgeSeconds": 3600
+  }
+]
