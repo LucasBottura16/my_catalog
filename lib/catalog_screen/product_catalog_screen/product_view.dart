@@ -229,7 +229,7 @@ class _ProductViewState extends State<ProductView> {
                         crossAxisCount: gridCrossAxisCount,
                         crossAxisSpacing: isSmallScreen ? 10 : 16,
                         mainAxisSpacing: isSmallScreen ? 10 : 16,
-                        childAspectRatio: isSmallScreen ? 0.8 : 0.9,
+                        childAspectRatio: isSmallScreen ? 1.5 : 1.1,
                       ),
                       itemCount: querySnapshot.docs.length,
                       itemBuilder: (context, index) {

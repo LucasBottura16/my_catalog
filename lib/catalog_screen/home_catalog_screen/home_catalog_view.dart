@@ -47,7 +47,7 @@ class _CatalogViewState extends State<CatalogView> {
 
     if (isMobile) {
       gridCrossAxisCount = 1;
-      gridChildAspectRatio = 2.3;
+      gridChildAspectRatio = 1.5;
       horizontalPadding = 16.0;
       verticalPadding = 8.0;
       gridSpacing = 12.0;
