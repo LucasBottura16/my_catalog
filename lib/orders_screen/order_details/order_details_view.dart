@@ -42,7 +42,7 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
           return AlertDialog(
             title: const Text("Cancelar Pedido"),
             content:
-                const Text("Você tem certeza que deseja cancelar este pedido?"),
+            const Text("Você tem certeza que deseja cancelar este pedido?"),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -63,6 +63,15 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    // Define uma largura máxima para o conteúdo principal em telas grandes (Web)
+    final double contentMaxWidth = screenWidth > 800
+        ? 1000
+        : screenWidth; // Ex: max 800px
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -74,175 +83,234 @@ class _OrderDetailsViewState extends State<OrderDetailsView> {
         actions: [
           _uid == _order.uidCompany
               ? IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    _deleteOrder();
-                  },
-                )
+            icon: const Icon(Icons.delete),
+            onPressed: _isLoading ? null : _deleteOrder,
+            // Desabilita se estiver carregando
+            tooltip: 'Excluir Pedido', // Adiciona um tooltip
+          )
               : const SizedBox(),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          // Outer Column
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+      body: Center( // Centraliza o conteúdo principal horizontalmente na web
+        child: ConstrainedBox( // Limita a largura do conteúdo principal
+          constraints: BoxConstraints(maxWidth: contentMaxWidth),
+          child: SingleChildScrollView( // Mantém o SingleChildScrollView para rolagem vertical
+            child: Padding(
+              padding: const EdgeInsets.all(16.0), // Padding geral
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Detalhes do cliente",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text("Nome: ${_order.nameCustomer}"),
-                  Text("Email: ${_order.emailCustomer}"),
-                  Text("Telefone: ${_order.phoneCustomer}"),
-                  Text("Endereço: ${_order.addressCustomer}"),
-                  const SizedBox(height: 20),
-                  CustomButton(
-                    onPressed: () {
-                      String phoneSelected = _order.uidCompany != _uid ?
-                          _order.phoneCompany :
-                          _order.phoneCustomer;
-                      String nameSelected = _order.uidCompany != _uid ?
-                          _order.nameCompany :
-                          _order.nameCustomer;
-                      OrderDetailsService.launchWhatsApp(phoneSelected, nameSelected);
-                    },
-                    title: _order.uidCompany == _uid ? "CHAMAR CLEINTE NO WHATSAPP" :
-                        "CHAMAR EMPRESA NO WHATSAPP",
-                    titleColor: Colors.white,
-                    buttonColor: Colors.green,
-                    buttonEdgeInsets: const EdgeInsets.fromLTRB(50, 15, 50, 15),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                "DETALHES DO PEDIDO - ${_order.totalAmount}",
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              physics:
-                  const NeverScrollableScrollPhysics(),
-              itemCount: _order.productsData.length,
-              itemBuilder: (context, index) {
-                final cartItem = _order.productsData[index];
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            cartItem["imageProduct"] ??
-                                'https://via.placeholder.com/80',
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                width: 80,
-                                height: 80,
-                                color: Colors.grey[300],
-                                child: const Icon(Icons.broken_image, size: 30),
-                              );
-                            },
+                  // Detalhes do Cliente
+                  Card( // Usar Card para agrupar as informações do cliente
+                    margin: const EdgeInsets.only(bottom: 20),
+                    elevation: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Detalhes do Cliente",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 8),
+                          SelectableText("Nome: ${_order.nameCustomer}",
+                              style: const TextStyle(fontSize: 15)),
+                          // SelectableText
+                          SelectableText("Email: ${_order.emailCustomer}",
+                              style: const TextStyle(fontSize: 15)),
+                          // SelectableText
+                          SelectableText("Telefone: ${_order.phoneCustomer}",
+                              style: const TextStyle(fontSize: 15)),
+                          // SelectableText
+                          SelectableText("Endereço: ${_order.addressCustomer}",
+                              style: const TextStyle(fontSize: 15)),
+                          // SelectableText
+                          const SizedBox(height: 20),
+                          SizedBox( // Usar SizedBox com double.infinity para o CustomButton
+                            width: double.infinity,
+                            child: CustomButton(
+                              onPressed: _isLoading
+                                  ? () {}
+                                  : () { // Desabilita se estiver carregando
+                                String phoneSelected = _order.uidCompany != _uid
+                                    ? _order.phoneCompany
+                                    : _order.phoneCustomer;
+                                String nameSelected = _order.uidCompany != _uid
+                                    ? _order.nameCompany
+                                    : _order.nameCustomer;
+                                OrderDetailsService.launchWhatsApp(
+                                    phoneSelected, nameSelected);
+                              },
+                              title: _order.uidCompany == _uid
+                                  ? "CHAMAR CLEINTE NO WHATSAPP"
+                                  : "CHAMAR EMPRESA NO WHATSAPP",
+                              titleColor: Colors.white,
+                              buttonColor: Colors.green,
+                              // Removido buttonEdgeInsets fixos e usei padding interno para o botão
+                              buttonEdgeInsets: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 15),
+                              titleSize: 16,
+                              buttonBorderRadius: 8,
+                              // Adicionado borderRadius
+                              isLoading: _isLoading,
+                              loadingColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Detalhes do Pedido e Lista de Produtos
+                  Text(
+                    "DETALHES DO PEDIDO - ${_order.totalAmount}",
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    // Mantém a rolagem no SingleChildScrollView pai
+                    itemCount: _order.productsData.length,
+                    itemBuilder: (context, index) {
+                      final cartItem = _order.productsData[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 8),
+                        // Removido horizontal padding aqui, já tem no pai
+                        elevation: 2,
+                        // Uma leve sombra
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
                             children: [
-                              Text(
-                                cartItem["productName"] ?? 'Nome do Produto',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  cartItem["imageProduct"] ??
+                                      'https://via.placeholder.com/80',
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 80,
+                                      height: 80,
+                                      color: Colors.grey[300],
+                                      child: const Center(
+                                        child: Icon(
+                                            Icons.broken_image, size: 35,
+                                            color: Colors.grey),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text('Qtd: ${cartItem["quantity"] ?? 0}'),
-                              Text(
-                                'Preço Unitário: ${cartItem["unitPrice"] ?? 'R\$ 0,00'}',
-                              ),
-                              Text(
-                                'Subtotal: ${cartItem["totalItemPrice"] ?? 'R\$ 0,00'}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      cartItem["productName"] ??
+                                          'Nome do Produto',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      maxLines: 2, // Limita as linhas
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text('Qtd: ${cartItem["quantity"] ?? 0}'),
+                                    Text(
+                                      'Preço Unitário: ${cartItem["unitPrice"] ??
+                                          'R\$ 0,00'}',
+                                    ),
+                                    Text(
+                                      'Subtotal: ${cartItem["totalItemPrice"] ??
+                                          'R\$ 0,00'}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: CustomButton(
-                onPressed: _order.status == "Pendente"
-                    ? () async {
-                        setState(() {
-                          _isLoading = true;
-                        });
-
-                        if (_order.uidCompany == _uid) {
-                          await OrderDetailsService.finishOrder(
-                              context, _order.uidOrder);
-                        } else {
-                          await _deleteOrder();
+                  const SizedBox(height: 20),
+                  // Espaço antes do botão de ação final
+                  // Botão de Ação Final (Confirmar/Cancelar/Finalizado)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    // Já tem padding no pai
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: CustomButton(
+                        onPressed: _isLoading
+                            ? () {}
+                            : _order.status == "Pendente"
+                            ? () async {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          if (_order.uidCompany == _uid) {
+                            await OrderDetailsService.finishOrder(
+                                context, _order.uidOrder);
+                          } else {
+                            await _deleteOrder(); // Para cliente, 'deletar' pode significar cancelar
+                          }
+                          setState(() {
+                            _isLoading = false;
+                          });
                         }
-
-                        setState(() {
-                          _isLoading = false;
-                        });
-                      }
-                    : () {
-                        debugPrint("Pedido já finalizado");
-                      },
-                title: _order.uidCompany != _uid && _order.status == "Pendente"
-                    ? "CANCELAR PEDIDO"
-                    : _order.status == "Pendente"
-                        ? "CONFIRMAR PEDIDO"
-                        : _order.status == "Cancelado"
+                            : () {
+                          // Se o pedido não está pendente, o botão não faz nada (ou exibe uma mensagem)
+                          debugPrint("Ação não permitida para pedido ${_order
+                              .status}");
+                        },
+                        title: _order.uidCompany != _uid &&
+                            _order.status == "Pendente"
+                            ? "CANCELAR PEDIDO"
+                            : _order.status == "Pendente"
+                            ? "CONFIRMAR PEDIDO"
+                            : _order.status == "Cancelado"
                             ? "PEDIDO CANCELADO"
                             : "PEDIDO FINALIZADO",
-                titleColor: Colors.white,
-                titleSize: 16,
-                buttonEdgeInsets:
-                    const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
-                buttonColor:_order.uidCompany != _uid && _order.status == "Pendente"
-                    ?  Colors.red
-                    : _order.status == 'Pendente'
-                    ? Colors.yellow.shade800
-                    : _order.status == "Cancelado"
-                        ? Colors.red
-                        : Colors.green,
-                buttonBorderRadius: 0,
-                isLoading: _isLoading,
-                loadingColor: MyColors.myPrimary,
+                        titleColor: Colors.white,
+                        titleSize: 16,
+                        buttonEdgeInsets: const EdgeInsets.symmetric(
+                            vertical: 20),
+                        // Ajustado padding vertical
+                        buttonColor: _order.uidCompany != _uid &&
+                            _order.status == "Pendente"
+                            ? Colors.red
+                            : _order.status == 'Pendente'
+                            ? MyColors
+                            .myPrimary // Usar MyColors.myPrimary para 'Pendente' (confirmação)
+                            : _order.status == "Cancelado"
+                            ? Colors.red
+                            : Colors.green,
+                        buttonBorderRadius: 8,
+                        // Adicionado borderRadius
+                        isLoading: _isLoading,
+                        loadingColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                  _isLoading ? const SizedBox(height: 10) : const SizedBox(
+                      height: 10),
+                  // Pequeno espaço no final
+                ],
               ),
             ),
-            _isLoading ? const SizedBox(height: 30) : const SizedBox(),
-          ],
+          ),
         ),
       ),
     );

@@ -59,7 +59,9 @@ class _ProfileViewState extends State<ProfileView> {
   _saveBiography() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (_controllerBiography.text.trim().isEmpty) {
+    if (_controllerBiography.text
+        .trim()
+        .isEmpty) {
       debugPrint("biografia vazia");
       setState(() {
         _biography = prefs.getString('biography') ?? '';
@@ -80,7 +82,8 @@ class _ProfileViewState extends State<ProfileView> {
   _deleteCatalog(String catalogId) async {
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) =>
+            AlertDialog(
               title: const Text("Excluir Catálogo"),
               content: const Text(
                   "Você tem certeza que deseja excluir este catálogo?"),
@@ -103,178 +106,229 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    // Define uma largura máxima para o conteúdo principal em telas grandes (Web)
+    final double contentMaxWidth = screenWidth > 1000 ? 1000 : screenWidth;
+
     return Scaffold(
       body: SingleChildScrollView(
-        // <--- Adicionado SingleChildScrollView aqui
-        child: Column(
+        child: Column( // Esta Column é a principal e conterá os dois blocos
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            // Bloco 1: Conteúdo do perfil (limitado a contentMaxWidth)
+            Center( // Centraliza o conteúdo horizontalmente na web
+              child: ConstrainedBox( // Limita a largura do conteúdo principal
+                constraints: BoxConstraints(maxWidth: contentMaxWidth),
+                child: Padding(
+                  padding: const EdgeInsets.all(20), // Padding aplicado aqui
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          color: MyColors.myPrimary,
-                          child: _photo.isEmpty
-                              ? Image.asset(
-                                  "images/Logo.png",
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.network(
-                                  _photo,
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    debugPrint(
-                                        'Erro ao carregar imagem de perfil: $error');
-                                    return Image.asset(
-                                      "images/Logo.png",
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
-                                ),
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      // Seção de Imagem de Perfil e Info do Usuário
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(_nome,
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)),
-                          Text("$_state - $_category",
-                              style: const TextStyle(fontSize: 12)),
-                          const SizedBox(height: 35),
-                          GestureDetector(
-                            onTap: () {
-                              ProfileService.logoutUser(context);
-                            },
-                            child: const Text("logout",
-                                style: TextStyle(color: Colors.red)),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Biografia",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _biography == ""
-                              ? _saveBiography()
-                              : setState(() {
-                                  _biography = "";
-                                });
-                        },
-                        child: Text(
-                          _biography == "" ? "Salvar" : "Editar",
-                          style: const TextStyle(color: MyColors.myPrimary),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 80,
-                    child: _biography == ""
-                        ? TextField(
-                            decoration: const InputDecoration(
-                                hintText: "Descreva sua Biografia"),
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            controller: _controllerBiography,
-                          )
-                        : Text(_biography),
-                  ),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    height: 60,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        style: profileButtonStyle,
-                        onPressed: () async {
-                          Navigator.pushNamed(
-                              context, RouteGenerator.orderView);
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "PEDIDOS",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              color: MyColors.myPrimary,
+                              child: _photo.isEmpty
+                                  ? Image.asset(
+                                "images/Logo.png",
+                                fit: BoxFit.cover,
+                              )
+                                  : Image.network(
+                                _photo,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  debugPrint(
+                                      'Erro ao carregar imagem de perfil: $error');
+                                  return Image.asset(
+                                    "images/Logo.png",
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                             ),
-                            Icon(
-                              Icons.keyboard_arrow_right,
-                              size: 30,
-                              weight: 3.5,
-                              color: Colors.white,
-                            )
-                          ],
-                        )),
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _nome,
+                                  style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  "$_state - $_category",
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Colors.grey),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 15),
+                                GestureDetector(
+                                  onTap: () {
+                                    ProfileService.logoutUser(context);
+                                  },
+                                  child: const Text("Sair",
+                                      style: TextStyle(color: Colors.red,
+                                          fontWeight: FontWeight.bold)),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+                      // Seção de Biografia
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Biografia",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _biography.isEmpty
+                                  ? _saveBiography()
+                                  : setState(() {
+                                _biography = "";
+                                _controllerBiography.text = "";
+                              });
+                            },
+                            child: Text(
+                              _biography.isEmpty ? "Salvar" : "Editar",
+                              style: const TextStyle(color: MyColors.myPrimary),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        constraints: BoxConstraints(
+                            maxHeight: _biography.isEmpty ? 150 : double
+                                .infinity),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        decoration: _biography.isEmpty
+                            ? BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(8),
+                        )
+                            : null,
+                        child: _biography.isEmpty
+                            ? TextField(
+                          decoration: const InputDecoration(
+                            hintText: "Descreva sua Biografia",
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                          ),
+                          maxLines: null,
+                          minLines: 3,
+                          keyboardType: TextInputType.multiline,
+                          controller: _controllerBiography,
+                          textAlignVertical: TextAlignVertical.top,
+                        )
+                            : Text(
+                          _biography,
+                          textAlign: TextAlign.justify,
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      // Botão de Pedidos
+                      SizedBox(
+                        height: 60,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            style: profileButtonStyle,
+                            onPressed: () async {
+                              Navigator.pushNamed(
+                                  context, RouteGenerator.orderView);
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "PEDIDOS",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.keyboard_arrow_right,
+                                  size: 30,
+                                  color: Colors.white,
+                                )
+                              ],
+                            )),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                ],
+                ),
               ),
             ),
-            // REMOVIDO: Expanded aqui. Um Expanded diretamente dentro de um Column
-            // que está dentro de um SingleChildScrollView causa conflito.
-            // Em vez disso, o Container terá uma altura definida pelo seu conteúdo.
+
+            // Bloco 2: Seção de Catálogos (ocupa a tela toda)
+            // *** ALTERAÇÃO AQUI: MOVIDO PARA FORA DO ConstrainedBox PRINCIPAL ***
             Container(
-              // <--- Container sem Expanded
               color: MyColors.myPrimary,
               padding: const EdgeInsets.symmetric(vertical: 20),
-              width: MediaQuery.of(context).size.width,
+              // Não precisa mais do 'width: MediaQuery.of(context).size.width' aqui,
+              // 'double.infinity' já fará ele ocupar toda a largura disponível
+              width: double.infinity,
               child: Column(
                 children: [
                   Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                              _typeAccount == "company"
-                                  ? "Meus Catálogos"
-                                  : "Catálogos Salvos",
-                              style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white)),
-                          _typeAccount == "company"
-                              ?
-                          CustomButton(
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                  context, RouteGenerator.addCatalog);
-                            },
-                            title: "+",
-                            titleSize: 20,
-                            titleColor: MyColors.myPrimary,
-                            buttonEdgeInsets: const EdgeInsets.only(left: 20),
-                          ): const SizedBox.shrink(),
-                        ],
-                      )),
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                            _typeAccount == "company"
+                                ? "Meus Catálogos"
+                                : "Catálogos Salvos",
+                            style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white)),
+                        _typeAccount == "company"
+                            ? CustomButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, RouteGenerator.addCatalog);
+                          },
+                          title: "+",
+                          titleSize: 20,
+                          titleColor: MyColors.myPrimary,
+                          buttonColor: Colors.white,
+                          buttonEdgeInsets: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 8),
+                          buttonBorderRadius: 8,
+                        )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   SizedBox(
-                    // <--- Adicionado SizedBox com altura fixa para o ListView.builder
                     height: 180,
-                    // Ajuste esta altura conforme o tamanho dos seus CustomCatalog
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _controllerStream.stream,
                       builder: (context, snapshot) {
@@ -297,10 +351,12 @@ class _ProfileViewState extends State<ProfileView> {
                           case ConnectionState.done:
                             if (snapshot.hasError) {
                               debugPrint(
-                                  "Erro no StreamBuilder de Catálogos: ${snapshot.error}");
+                                  "Erro no StreamBuilder de Catálogos: ${snapshot
+                                      .error}");
                               return Center(
                                 child: Text(
-                                    "Erro ao carregar catálogos: ${snapshot.error}",
+                                    "Erro ao carregar catálogos: ${snapshot
+                                        .error}",
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(color: Colors.red)),
                               );
@@ -325,19 +381,19 @@ class _ProfileViewState extends State<ProfileView> {
                             return ListView.builder(
                               scrollDirection: Axis.horizontal,
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
+                              const EdgeInsets.symmetric(horizontal: 20),
                               itemCount: querySnapshot.docs.length,
                               itemBuilder: (context, index) {
                                 DocumentSnapshot documentSnapshot =
-                                    querySnapshot.docs[index];
+                                querySnapshot.docs[index];
                                 DBAddCatalog myCatalog =
-                                    DBAddCatalog.fromDocumentSnapshotCatalog(
-                                        documentSnapshot);
+                                DBAddCatalog.fromDocumentSnapshotCatalog(
+                                    documentSnapshot);
 
                                 return Padding(
-                                  padding: const EdgeInsets.only(right: 10),
+                                  padding: const EdgeInsets.only(right: 15),
                                   child: SizedBox(
-                                      width: 340,
+                                      width: 300,
                                       child: GestureDetector(
                                         onLongPress: () {
                                           _deleteCatalog(myCatalog.uid);
@@ -346,6 +402,7 @@ class _ProfileViewState extends State<ProfileView> {
                                           title: myCatalog.catalogName,
                                           imageUrl: myCatalog.catalogImage,
                                           textButton: "Editar",
+                                          isCompactMode: true,
                                           onPressed: () {
                                             Navigator.pushNamed(
                                               context,

@@ -26,22 +26,56 @@ class _CatalogViewState extends State<CatalogView> {
   }
 
   @override
+  void dispose() {
+    _controllerStream.close();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isSmallScreen = screenWidth < 600;
-    final gridCrossAxisCount = isSmallScreen ? 1 : 3;
-    final gridChildAspectRatio = isSmallScreen ? 0.8 : 1.0;
+    final screenSize = MediaQuery.of(context).size;
+    final isMobile = screenSize.width < 600;
+    final isTablet = screenSize.width >= 600 && screenSize.width < 900;
+
+    // Responsive grid configuration
+    final int gridCrossAxisCount;
+    final double gridChildAspectRatio;
+    final double horizontalPadding;
+    final double verticalPadding;
+    final double gridSpacing;
+
+    if (isMobile) {
+      gridCrossAxisCount = 1;
+      gridChildAspectRatio = 2.3;
+      horizontalPadding = 16.0;
+      verticalPadding = 8.0;
+      gridSpacing = 12.0;
+    } else if (isTablet) {
+      gridCrossAxisCount = 2;
+      gridChildAspectRatio = 1.3;
+      horizontalPadding = 20.0;
+      verticalPadding = 12.0;
+      gridSpacing = 16.0;
+    } else {
+      gridCrossAxisCount = 3;
+      gridChildAspectRatio = 1.3;
+      horizontalPadding = 24.0;
+      verticalPadding = 16.0;
+      gridSpacing = 20.0;
+    }
 
     return Scaffold(
       body: Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 1200),
+          constraints: const BoxConstraints(maxWidth: 1200.0),
           child: Column(
             children: [
+              // Search and Filter Row
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: isSmallScreen ? 16 : 24,
-                  vertical: 20,
+                  horizontal: horizontalPadding,
+                  vertical: 20.0,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -52,24 +86,25 @@ class _CatalogViewState extends State<CatalogView> {
                         labelText: "Sem texto",
                         hintText: "Buscar produto",
                         contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 16,
+                          vertical: 12.0,
+                          horizontal: 16.0,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 12.0),
                     IconButton(
                       onPressed: () {},
-                      icon: const Icon(Icons.filter_list, size: 30),
+                      icon: const Icon(Icons.filter_list, size: 30.0),
                       style: IconButton.styleFrom(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(12.0),
                       ),
                     ),
                   ],
                 ),
               ),
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
+
+              // Catalog Grid
+               Expanded(child: StreamBuilder<QuerySnapshot>(
                   stream: _controllerStream.stream,
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
@@ -81,8 +116,9 @@ class _CatalogViewState extends State<CatalogView> {
                             children: [
                               Text("Carregando Catálogos...",
                                   style: TextStyle(color: MyColors.myPrimary)),
-                              SizedBox(height: 16),
-                              CircularProgressIndicator(color:MyColors.myPrimary),
+                              SizedBox(height: 16.0),
+                              CircularProgressIndicator(
+                                  color: MyColors.myPrimary),
                             ],
                           ),
                         );
@@ -97,17 +133,17 @@ class _CatalogViewState extends State<CatalogView> {
                           );
                         }
 
-                        QuerySnapshot? querySnapshot = snapshot.data;
+                        final QuerySnapshot? querySnapshot = snapshot.data;
 
                         if (querySnapshot == null || querySnapshot.docs.isEmpty) {
-                          return  Center(
+                          return Center(
                             child: Padding(
-                              padding: EdgeInsets.all(20),
+                              padding: const EdgeInsets.all(20.0),
                               child: Text(
                                 "Nenhum catálogo encontrado!",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 20.0,
                                     fontWeight: FontWeight.bold,
                                     color: MyColors.myPrimary),
                               ),
@@ -117,20 +153,20 @@ class _CatalogViewState extends State<CatalogView> {
 
                         return GridView.builder(
                           padding: EdgeInsets.symmetric(
-                            horizontal: isSmallScreen ? 16 : 24,
-                            vertical: 8,
+                            horizontal: horizontalPadding,
+                            vertical: verticalPadding,
                           ),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: gridCrossAxisCount,
                             childAspectRatio: gridChildAspectRatio,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
+                            crossAxisSpacing: gridSpacing,
+                            mainAxisSpacing: gridSpacing,
                           ),
                           itemCount: querySnapshot.docs.length,
                           itemBuilder: (context, index) {
-                            DocumentSnapshot documentSnapshot =
+                            final DocumentSnapshot documentSnapshot =
                             querySnapshot.docs[index];
-                            DBAddCatalog myCatalog =
+                            final DBAddCatalog myCatalog =
                             DBAddCatalog.fromDocumentSnapshotCatalog(
                                 documentSnapshot);
 
