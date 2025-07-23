@@ -6,3 +6,5 @@
     "maxAgeSeconds": 3600
   }
 ]
+
+//gsutil cors set cors.json gs://meu-catalogo-ad35e.firebasestorage.app
