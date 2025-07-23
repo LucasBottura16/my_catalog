@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["http://localhost:52204","https://botturatech.com.br"],
+    "origin": ["https://botturatech.com.br","https://mycatalog.botturatech.com.br"],
     "method": ["GET"],
     "responseHeader": ["Content-Type"],
     "maxAgeSeconds": 3600
